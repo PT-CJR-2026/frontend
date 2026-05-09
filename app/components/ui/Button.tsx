@@ -10,10 +10,10 @@ const Button: React.FC<ButtonProps> = ({
     className = "",
     ...props 
 }) => {
-    const base = "w-full py-3 rounded-xl font-semibold transition";
+    const base = "w-full py-3 rounded-full font-semibold transition";
 
     const variants = {
-    primary: "bg-[#6A38F3] text-white hover:opacity-90",
+    primary: "bg-[#6A38F3] text-white text-2xl hover:bg-[#FFFFFF] hover:text-purple-600",
     secondary: "bg-gray-200 text-black hover:bg-gray-300",
     };
 
