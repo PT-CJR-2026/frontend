@@ -59,14 +59,14 @@ export default function Cadastro() {
       </Head>
 
       {/* Container Principal: Fundo bege claro, ocupando a tela toda */}
-      <main className="min-h-screen flex flex-col md:flex-row bg-[#F6F3E4] font-sans overflow-hidden">
+      <main className="h-screen flex flex-col md:flex-row bg-[#F6F3E4] font-sans overflow-hidden">
         
         
         {/* COLUNA ESQUERDA: Wrapper Invisível */}
-        <div className="w-full lg:w-[50%] min-h-screen flex flex-col pt-[113px] pl-[85px] z-10">
+        <div className="w-full lg:w-[50%] min-h-screen flex flex-col pt-[50px] pl-[85px] z-10">
           
           {/* CARD ESCURO */}
-          <div className="bg-[#171918] w-full max-w-[654px] flex-1 p-12 sm:p-16 shadow-2xl flex flex-col rounded-t-[48px] rounded-b-none">
+          <div className="bg-[#171918] w-full max-w-[654px] flex-1 p-12 sm:p-16 shadow-2xl flex flex-col rounded-t-[48px] rounded-b-none overflow-hidden">
             
             <h1 className="text-[#F6F3E4] text-[44px] font-extrabold text-center mb-[60px] uppercase">
               CRIE SUA CONTA
@@ -179,10 +179,10 @@ export default function Cadastro() {
 
         
         {/* COLUNA DIREITA: Logo e Mascote */}
-        <div className="hidden md:flex flex-1 flex-col items-center justify-center relative p-8">
+        <div className="hidden md:flex flex-1 flex-col items-center justify-start relative pt-0">
           
           {/* Logo */}
-          <div className="w-[421px] max-w-full relative">
+          <div className="w-[421px] max-w-full relative -mt-[60px]">
             <Image 
               src="/LOGO Stock.io.svg" 
               alt="Stock.IO Logo" 
@@ -194,7 +194,7 @@ export default function Cadastro() {
           </div>
           
           {/* Mascote */}
-          <div className="w-[497px] max-w-full relative">
+          <div className="w-[497px] max-w-full relative h-[70vh]">
             <Image 
               src="/Stocklee - Mascote 2 da Stock.io.png" 
               alt="Mascote Stock.IO" 
