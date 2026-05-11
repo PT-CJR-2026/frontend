@@ -1,6 +1,9 @@
 'use client'
 
 import React, { useState } from 'react';
+import Button from "@/app/components/ui/Button";
+import Input from "@/app/components/ui/Input";
+import LinkText from "@/app/components/ui/LinkText";
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -155,14 +158,13 @@ export default function Cadastro() {
                     <ErrorMessage name="confirmarSenha" component="div" className="text-red-400 text-xs mt-1 ml-4" />
                   </div>
 
-                  {/* Botão de Submit */}
-                  <button
+                  <Button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full mt-[27px] h-[52px] bg-[#6A38F3] text-white rounded-[76px] font-bold text-lg hover:bg-purple-700 transition disabled:opacity-50"
+                    loading={isSubmitting}
+                    className="mt-[27px] h-[52px]"
                   >
-                    {isSubmitting ? 'CRIANDO...' : 'CRIAR CONTA'}
-                  </button>
+                    CRIAR CONTA
+                  </Button>
 
                   {/* Link para Login */}
                   <div className="text-[20px] mt-[30px] text-white font-light">
