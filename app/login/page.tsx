@@ -7,32 +7,36 @@ import * as Yup from 'yup';
 
 export default function LoginPage() {
     return(
-        <div className="min-h-screen flex flex-col md:flex-row bg-[#F6F3E4] font-sans overflow-hidden">
-             <div className="hidden md:flex flex-1 flex-col items-center justify-center relative p-8">
+        <div className="h-screen flex flex-col md:flex-row bg-[#F6F3E4] font-sans overflow-hidden">
+             <div className="hidden md:flex flex-1 flex-col items-center justify-start relative pt-0">
         {/* LOGO */}
-        <Image
-            src="/LOGO Stock.io.svg"
-            alt="Logo"
-            width={421}
-            height={267}
-            className="mb-6"
-            style={{ height: "auto" }}
-        />
+        <div className="w-[421px] max-w-full relative -mt-[60px]">
+                    <Image 
+                      src="/LOGO Stock.io.svg" 
+                      alt="Stock.IO Logo" 
+                      width={421} 
+                      height={267} 
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
 
-        {/* BONECO */}
-        <Image
-            src="/Stockles - Mascote da Stock.io.png"
-            alt="Mascote"
-            priority
-            width={497}
-            height={1129}
-            style={{ height: "auto" }}
-        />
+            {/* BONECO */}
+            <div className="w-[497px] max-w-full relative h-[70vh]">
+            <Image
+                src="/Stockles - Mascote da Stock.io.png"
+                alt="Mascote"
+                priority
+                width={497}
+                height={1129}
+                style={{ height: "auto" }}
+            />
+            </div>
         </div>
             {/* Coluna Direita: LOGIN */}
-            <div className="w-full lg:w-[50%] min-h-screen flex flex-col pt-[113px] pl-[85px] z-10">
+            <div className="w-full lg:w-[50%] min-h-screen flex flex-col pt-[50px] pl-[85px] z-10">
                 {/* CARD ESCURO */}
-                <div className="bg-[#171918] w-full max-w-[654px] flex-1 p-12 sm:p-16 shadow-2xl flex flex-col rounded-t-[48px] rounded-b-none">
+                <div className="bg-[#171918] w-full max-w-[654px] flex-1 p-12 sm:p-16 shadow-2xl flex flex-col rounded-t-[48px] rounded-b-none overflow-hidden">
                     <div className="flex flex-col gap-10">
                         <h2 className="text-[#F6F3E4] font-bold text-4xl mb-3 uppercase text-center">Bem vindo de volta!</h2>
                         <Input 
