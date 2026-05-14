@@ -200,7 +200,7 @@ export default function Cadastro() {
           {/* Mascote */}
           <div className="w-[497px] max-w-full relative h-[70vh]">
             <Image 
-              src="/Stocklee - Mascote 2 da Stock.io.png" 
+              src="/StockLee - Mascote 2 da Stock.io.png" 
               alt="Mascote Stock.IO" 
               width={497} 
               height={1129} 
