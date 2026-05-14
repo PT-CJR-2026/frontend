@@ -185,14 +185,16 @@ export default function Cadastro() {
           
           {/* Logo */}
           <div className="w-[421px] max-w-full relative -mt-[60px]">
-            <Image 
-              src="/LOGO Stock.io.svg" 
-              alt="Stock.IO Logo" 
-              width={421} 
-              height={267} 
-              className="object-contain"
-              priority
-            />
+            <Link href={"/"}>
+              <Image 
+                src="/LOGO Stock.io.svg" 
+                alt="Stock.IO Logo" 
+                width={421} 
+                height={267} 
+                className="object-contain"
+                priority
+              />
+            </Link>
           </div>
           
           {/* Mascote */}
