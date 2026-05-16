@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@/app/components/ui/Button";
 import LinkText from "@/app/components/ui/LinkText";
 import Link from "next/link";
@@ -12,11 +12,18 @@ const Navbar: React.FC<NavbarProps> = ({
   logoSrc,
   logoAlt = "Logo",
 }) => {
-  //Mock para testar a navbarlogada e deslogada
+
   const loading = false;
-  const [usuario, setUsuario] = useState(true);
+
+  const [usuario, setUsuario] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('TOKEN_APLICACAO_FRONT');
+    setUsuario(!!token);
+  }, []);
 
   const logout = () => {
+    localStorage.removeItem('TOKEN_APLICACAO_FRONT');
     setUsuario(false);
   };
 
@@ -52,7 +59,6 @@ const Navbar: React.FC<NavbarProps> = ({
             {usuario ? (
               <div className="flex items-center gap-10">
                 {/* Ações com login */}
-                {/* Após concluir as entregas melhorar a responsividade */}
                 {/* Perfil do usuário */}
                 <Link href={"/login"}>
                   <svg
@@ -66,8 +72,6 @@ const Navbar: React.FC<NavbarProps> = ({
                 </Link>
 
                 {/* Deslogar - Sair */}
-                {/* Tá mockado */}
-                {/* Button e button ficou bem ruim, achei que o react tava quebrado */}
                 <button onClick={logout}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +87,6 @@ const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center gap-10">
 
                 {/* Ações sem login */}
-                {/* Após concluir as entregas melhorar a responsividade */}
                 {/* Login */}
                 <Link href="/login">
                   <LinkText
