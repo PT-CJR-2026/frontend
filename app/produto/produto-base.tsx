@@ -13,6 +13,7 @@ interface ProdutoBaseProps {
   children?: React.ReactNode;
 }
 
+// mock para testes, aqui vai ter que buscar as categorias no prisma
 const subcategorias = [
   { value: "eletronicos", label: "Eletrônicos" },
   { value: "roupas", label: "Roupas" },
@@ -49,7 +50,9 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
         {/* Input de imagens */}
         <ImagemInput large />
         <div className="grid grid-cols-3 gap-3 mt-3 mb-5">
-          <ImagemInput /><ImagemInput /><ImagemInput />
+          <ImagemInput />
+          <ImagemInput />
+          <ImagemInput />
         </div>
 
         <div className="flex flex-col gap-3 mb-5">
@@ -160,8 +163,7 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
 
           {/* Estoque (Mais conhecido como tortura por botões) */}
           <div>
-            <div className={`flex items-center justify-between bg-white rounded-2xl px-4 py-3
-              ${formik.touched.estoque && formik.errors.estoque ? "ring-2 ring-red-300" : "focus-within:ring-2 focus-within:ring-violet-300"}`}
+            <div className={"flex items-center justify-between rounded-2xl px-24 py-3"}
             >
               <button
                 type="button"
@@ -170,12 +172,12 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
                   if (atual > 0) formik.setFieldValue("estoque", String(atual - 1));
                   formik.setFieldTouched("estoque", true);
                 }}
-                className="w-7 h-7 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-lg leading-none"
+                className="w-10 h-10 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-3xl leading-none cursor-pointer"
               >
                 −
               </button>
 
-              <span className="text-gray-700 text-sm font-medium w-12 text-center">
+              <span className="text-gray-700 text-xl font-medium w-12 text-center select-none">
                 {formik.values.estoque || "0"}
               </span>
 
@@ -186,7 +188,7 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
                   formik.setFieldValue("estoque", String(atual + 1));
                   formik.setFieldTouched("estoque", true);
                 }}
-                className="w-7 h-7 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-lg leading-none"
+                className="w-10 h-10 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-3xl leading-none cursor-pointer "
               >
                 +
               </button>
