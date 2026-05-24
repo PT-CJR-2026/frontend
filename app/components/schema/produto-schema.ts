@@ -17,9 +17,6 @@ export const produtoSchema = Yup.object({
       (value) => Number(value?.replace(",", ".")) > 0
   ),
 
-  estoque: Yup.number()
-    .required("Estoque é obrigatório"),
-
   subcategoria: Yup.string()
     .required("Selecione uma subcategoria"),
 });
