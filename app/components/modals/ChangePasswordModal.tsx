@@ -42,6 +42,8 @@ export function ChangePasswordModal({ onClose, onBack }: Props) {
     <Modal onClose={onClose} onBack={onBack}>
       <div className="flex flex-col items-center gap-10">
 
-        {/* Ícone de chave — substitua pelo seu SVG */}
+        {uim_key-skeleton ? (
+          <img src={uim_key-skeleton} alt="Chave" className="w-20 h-20" />
+        ) : (
         <svg
           width="90"
