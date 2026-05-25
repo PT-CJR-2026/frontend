@@ -1,11 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Modal } from "../ui/Modal";
-import { FormFields, FieldConfig } from "../ui/FormFields";
-import { SaveButton } from "../ui/SaveButton";
-import Vector 112 from "../../assets/Vector 112.svg";
-import uim_key-skeleton from "../../assets/uim_key-skeleton.svg";
-import Image 15 from "../../assets/Image 15.svg";
+import { Modal } from "@/app/components/ui/Modal";
+import { FormFields, FieldConfig } from "@/app/components/ui/FormFields";
+import { SaveButton } from "@/app/components/ui/SaveButton";
 
 interface Props {
   onClose: () => void;
@@ -41,9 +38,10 @@ export function ChangePasswordModal({ onClose, onBack }: Props) {
   return (
     <Modal onClose={onClose} onBack={onBack}>
       <div className="flex flex-col items-center gap-10">
-
-        {uim_key-skeleton ? (
-          <img src={uim_key-skeleton} alt="Chave" className="w-20 h-20" />
-        ) : (
-        <svg
-          width="90"
+        <img src="/uim_key-skeleton.svg" alt="Chave" width={90} height={90} />
+        <FormFields fields={fields} />
+        <SaveButton label="Salvar Senha" />
+      </div>
+    </Modal>
+  );
+}
