@@ -28,8 +28,7 @@ export function EditProfileModal({ onClose, initialData }: Props) {
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setAvatarPreview(url);
+      setAvatarPreview(URL.createObjectURL(file));
     }
   }
 
@@ -66,27 +65,22 @@ export function EditProfileModal({ onClose, initialData }: Props) {
       <div className="flex flex-col items-center gap-5">
         {/* Avatar */}
         <div
-          className="relative cursor-pointer mb-2"
+          className="relative cursor-pointer"
           onClick={() => fileRef.current?.click()}
         >
-          {avatarPreview ? (
-            <img
-              src={avatarPreview}
-              alt="avatar"
-              className="w-24 h-24 rounded-full object-cover"
-            />
-          ) : (
-            <img
-              src="/image-15.svg"
-              alt="avatar"
-              className="w-24 h-24 rounded-full object-cover"
-            />
-          )}
-
+          <img
+            src={avatarPreview || "/ion_person.svg"}
+            alt="avatar"
+            className="w-24 h-24 rounded-full object-cover bg-gray-200"
+          />
           <div className="absolute bottom-0 right-0 bg-white rounded-full p-1.5 shadow-md">
-            <img src="/Vector-112.svg" alt="câmera" width={16} height={16} />
+            <img
+              src="/Group-17.svg"
+              alt="alterar foto"
+              width={24}
+              height={24}
+            />
           </div>
-
           <input
             ref={fileRef}
             type="file"

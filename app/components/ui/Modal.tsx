@@ -1,3 +1,5 @@
+"use client";
+
 interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
@@ -7,29 +9,43 @@ interface ModalProps {
 export function Modal({ onClose, children, onBack }: ModalProps) {
   return (
     <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
-      onClick={onClose} // clique no overlay fecha
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={onClose}
     >
       <div
-        className="relative bg-[#ebebeb] rounded-3xl p-10 shadow-lg"
+        className="relative bg-[#e8e8e8] rounded-3xl shadow-xl"
         style={{ width: "654px", height: "802px" }}
-        onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
+        onClick={(e) => e.stopPropagation()}
       >
+        {/* Botão voltar — canto superior esquerdo */}
         {onBack && (
           <button
             onClick={onBack}
-            className="absolute top-6 left-7 text-gray-500 text-2xl leading-none hover:text-gray-700"
+            className="absolute top-7 left-8 text-gray-400 hover:text-gray-600 transition text-2xl font-light leading-none"
           >
             ‹
           </button>
         )}
+
+        {/* Botão fechar — canto superior direito */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-7 text-gray-500 hover:text-gray-700"
+          className="absolute top-7 right-8 text-gray-400 hover:text-gray-600 transition"
         >
-          ✕
+          <svg width="33" height="33" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M1 1L15 15M15 1L1 15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
         </button>
-        {children}
+
+        {/* Conteúdo centralizado */}
+        <div className="flex flex-col items-center justify-center h-full px-10">
+          {children}
+        </div>
       </div>
     </div>
   );
