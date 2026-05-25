@@ -38,7 +38,12 @@ export function ChangePasswordModal({ onClose, onBack }: Props) {
   return (
     <Modal onClose={onClose} onBack={onBack}>
       <div className="flex flex-col items-center gap-10">
-        <img src="/uim_key-skeleton.svg" alt="Chave" width={90} height={90} />
+        <img
+          src="/uim_key-skeleton.svg" // ícone de chave
+          alt="Chave"
+          width={180.64}
+          height={180.64}
+        />
         <FormFields fields={fields} />
         <SaveButton label="Salvar Senha" />
       </div>
