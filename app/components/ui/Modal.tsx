@@ -21,9 +21,14 @@ export function Modal({ onClose, children, onBack }: ModalProps) {
         {onBack && (
           <button
             onClick={onBack}
-            className="absolute top-7 left-8 text-gray-400 hover:text-gray-600 transition text-2xl font-light leading-none"
+            className="absolute top-7 left-8 hover:opacity-70 transition"
           >
-            ‹
+            <img
+              src="/Vector-112.svg"
+              alt="voltar"
+              width={18.24}
+              height={24.75}
+            />
           </button>
         )}
 

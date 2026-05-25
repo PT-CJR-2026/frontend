@@ -68,10 +68,10 @@ export function EditProfileModal({ onClose, initialData }: Props) {
           className="relative cursor-pointer"
           onClick={() => fileRef.current?.click()}
         >
-          <img
+          <img //avatarDo perfil
             src={avatarPreview || "/ion_person.svg"}
             alt="avatar"
-            className="w-24 h-24 rounded-full object-cover bg-gray-200"
+            className="w-24 h-24 rounded-full object-cover bg-gray-300"
           />
           <div className="absolute bottom-0 right-0 bg-white rounded-full p-1.5 shadow-md">
             <img
