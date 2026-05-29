@@ -55,7 +55,7 @@ export default function Cadastro() {
   const onSubmit = async (values: CadastroFormValues, { setSubmitting }: any) => {
     try {
       await cadastroService.cadastrar({
-        nomeCompleto: values.nomeCompleto,
+        nome: values.nomeCompleto,
         username: values.username,
         email: values.email,
         senha_hash: values.senha,
