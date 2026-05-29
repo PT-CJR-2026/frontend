@@ -4,6 +4,7 @@ import CardProduto from "@/app/components/ui/CardProduto";
 import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
 import Navbar from "../components/layout/Navbar";
 import { Produto } from "@/app/components/ui/CardProduto";
+import IndicePagina from "../components/ui/IndicePaginas";
 
 // ── Mock data ──────────────────────────────────────────────────────────────
 
@@ -76,6 +77,12 @@ export default function TestePage() {
           onProductClick={(p) => console.log("promoção clicada:", p)}
         />
 
+        {/* Indice Pagina - produtos */}
+        <IndicePagina
+              titulo="Produtos"
+              produtos={mockProdutos}
+              onProductClick={(p) => console.log("carrossel clicado:", p)}
+            />
       </div>
 
       <div className= "h-16" />
