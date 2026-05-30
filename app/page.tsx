@@ -129,7 +129,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
       {/* Navbar — já lida com logado/deslogado internamente */}
-      <Navbar logoSrc="/LOGO Stock.io.svg" logoAlt="Stock.IO" />
+      <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
 
       {/* Hero — usa slug "home" */}
       <Hero slug="home" />
