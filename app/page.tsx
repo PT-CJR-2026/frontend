@@ -64,6 +64,9 @@ function SecaoLojas() {
     <section className="px-6 md:px-10 mt-12 mb-10">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-[#111] text-[30px] font-semibold">Lojas</h2>
+
+        {/*espaço para o botão de filtros, para quando tiver implementado,
+        só colocar:   <button onClick={() => abrirFiltro()} ...> */}
         <button className="text-sm text-[#444] border border-[#ccc] rounded-full px-4 py-1.5 flex items-center gap-2 hover:border-[#6A38F3] hover:text-[#6A38F3] transition-colors">
           filtros ▾
         </button>
@@ -126,7 +129,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
       {/* Navbar — já lida com logado/deslogado internamente */}
-      <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
+      <Navbar logoSrc="/LOGO Stock.io.svg" logoAlt="Stock.IO" />
 
       {/* Hero — usa slug "home" */}
       <Hero slug="home" />
