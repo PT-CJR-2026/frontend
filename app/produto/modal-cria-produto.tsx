@@ -1,32 +1,46 @@
 "use client";
 
 import { useFormik } from "formik";
-import axios from "axios";
-import ProdutoBase from "./produto-base";
+import { useState } from "react";
+import ProdutoBase, { ImagensProduto } from "./produto-base";
 import { produtoSchema, dadosVazios } from "../components/schema/produto-schema";
+import { ModalService } from "../services/ModalService";
+
+const imagensVazias: ImagensProduto = {
+  principal: null,
+  secundarias: [null, null, null],
+};
 
 interface CriaProdutoProps {
+  lojaId: number;
   onClose: () => void;
   onSucesso?: () => void;
 }
 
-export default function CriaProduto({ onClose, onSucesso }: CriaProdutoProps) {
+export default function CriaProduto({ lojaId, onClose, onSucesso }: CriaProdutoProps) {
+  const [imagens, setImagens] = useState<ImagensProduto>(imagensVazias);
+
   const formik = useFormik({
     initialValues: dadosVazios,
     validationSchema: produtoSchema,
     onSubmit: async (values, { setSubmitting, setStatus }) => {
       try {
-        await axios.post("/api/produto", {
+        const produto = await ModalService.criarProduto({
+          loja_id: lojaId,
           nome: values.nome,
           descricao: values.descricao,
           preco: parseFloat(values.preco),
           estoque: parseInt(values.estoque),
-          subcategoria: values.subcategoria,
+          categoria_id: parseInt(values.subcategoria),
         });
+
+        await ModalService.salvarImagensProduto(produto.id, imagens);
+
         onSucesso?.();
         onClose();
-      } catch {
-        setStatus("Erro ao criar produto. Tente novamente.");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Erro ao criar produto.";
+        setStatus(msg);
       } finally {
         setSubmitting(false);
       }
@@ -34,7 +48,12 @@ export default function CriaProduto({ onClose, onSucesso }: CriaProdutoProps) {
   });
 
   return (
-    <ProdutoBase formik={formik} onClose={onClose}>
+    <ProdutoBase
+      formik={formik}
+      onClose={onClose}
+      imagens={imagens}
+      onImagensChange={setImagens}
+    >
       {formik.status && (
         <p className="text-red-500 text-sm text-center mb-3">{formik.status}</p>
       )}

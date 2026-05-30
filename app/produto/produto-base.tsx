@@ -7,33 +7,52 @@ import { FormikProps } from "formik";
 import { DadosProduto } from "../components/schema/produto-schema";
 import CurrencyInput from "react-currency-input-field";
 
+export interface ImagensProduto {
+  principal: File | null;
+  secundarias: (File | null)[];
+}
+
 interface ProdutoBaseProps {
   formik: FormikProps<DadosProduto>;
   onClose: () => void;
+  imagens: ImagensProduto;
+  onImagensChange: (imagens: ImagensProduto) => void;
   children?: React.ReactNode;
 }
 
-// mock para testes, aqui vai ter que buscar as categorias no prisma
 const subcategorias = [
-  { value: "eletronicos", label: "Eletrônicos" },
-  { value: "roupas", label: "Roupas" },
-  { value: "alimentacao", label: "Alimentação" },
+  { value: "1", label: "Eletrônicos" },
+  { value: "2", label: "Roupas" },
+  { value: "3", label: "Alimentação" },
 ];
 
-export default function ProdutoBase({ formik, onClose, children }: ProdutoBaseProps) {
+export default function ProdutoBase({
+  formik,
+  onClose,
+  imagens,
+  onImagensChange,
+  children,
+}: ProdutoBaseProps) {
   const [subcategoriaOpen, setSubcategoriaOpen] = useState(false);
 
-  // Helper para exibir erro apenas após o campo ter sido tocado
   const erro = (campo: keyof DadosProduto) =>
     formik.touched[campo] && formik.errors[campo] ? (
       <span className="text-red-500 text-xs ml-1">{formik.errors[campo]}</span>
     ) : null;
 
+  const handlePrincipal = (file: File | null) =>
+    onImagensChange({ ...imagens, principal: file });
+
+  const handleSecundaria = (index: number, file: File | null) => {
+    const novas = [...imagens.secundarias] as (File | null)[];
+    novas[index] = file;
+    onImagensChange({ ...imagens, secundarias: novas });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="bg-[#EDEDED] rounded-3xl w-full max-w-sm p-6 relative shadow-xl max-h-[90vh] overflow-y-auto">
 
-        {/* Fechar */}
         <button
           type="button"
           onClick={onClose}
@@ -42,22 +61,30 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
           <X className="w-4 h-4" />
         </button>
 
-        {/* Titulo */}
         <h2 className="text-center text-2xl font-semibold text-gray-800 mb-5">
           Adicionar produto
         </h2>
 
-        {/* Input de imagens */}
-        <ImagemInput large />
+        {/* Imagem principal */}
+        <ImagemInput
+          large
+          value={imagens.principal}
+          onChange={handlePrincipal}
+        />
+
+        {/* Imagens secundárias */}
         <div className="grid grid-cols-3 gap-3 mt-3 mb-5">
-          <ImagemInput />
-          <ImagemInput />
-          <ImagemInput />
+          {imagens.secundarias.map((file, i) => (
+            <ImagemInput
+              key={i}
+              value={file}
+              onChange={(f) => handleSecundaria(i, f)}
+            />
+          ))}
         </div>
 
         <div className="flex flex-col gap-3 mb-5">
 
-          {/* Nome */}
           <div>
             <input
               type="text"
@@ -70,7 +97,6 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
             {erro("nome")}
           </div>
 
-          {/* Subcategoria */}
           <div>
             <div className={`w-full bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200
               ${subcategoriaOpen ? "ring-2 ring-violet-300 border-violet-300" : ""}
@@ -121,7 +147,6 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
             {erro("subcategoria")}
           </div>
 
-          {/* Descrição */}
           <div>
             <textarea
               placeholder="Descrição do produto"
@@ -133,7 +158,6 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
             {erro("descricao")}
           </div>
 
-          {/* Preço */}
           <div>
             <CurrencyInput
               id="preco"
@@ -145,26 +169,17 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
               allowNegativeValue={false}
               prefix="R$ "
               value={formik.values.preco}
-              onValueChange={(value) => {
-                formik.setFieldValue("preco", value || "");
-              }}
+              onValueChange={(value) => formik.setFieldValue("preco", value || "")}
               onBlur={formik.handleBlur}
               className={`w-full rounded-2xl px-4 py-3 bg-white text-sm text-gray-700 placeholder-gray-400
                 focus:outline-none focus:ring-2 focus:ring-violet-300
-                ${
-                  formik.touched.preco && formik.errors.preco
-                    ? "ring-2 ring-red-300"
-                    : ""
-                }`}
+                ${formik.touched.preco && formik.errors.preco ? "ring-2 ring-red-300" : ""}`}
             />
-
             {erro("preco")}
           </div>
 
-          {/* Estoque (Mais conhecido como tortura por botões) */}
           <div>
-            <div className={"flex items-center justify-between rounded-2xl px-24 py-3"}
-            >
+            <div className="flex items-center justify-between rounded-2xl px-24 py-3">
               <button
                 type="button"
                 onClick={() => {
@@ -176,11 +191,9 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
               >
                 −
               </button>
-
               <span className="text-gray-700 text-xl font-medium w-12 text-center select-none">
                 {formik.values.estoque || "0"}
               </span>
-
               <button
                 type="button"
                 onClick={() => {
@@ -188,7 +201,7 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
                   formik.setFieldValue("estoque", String(atual + 1));
                   formik.setFieldTouched("estoque", true);
                 }}
-                className="w-10 h-10 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-3xl leading-none cursor-pointer "
+                className="w-10 h-10 rounded-full border-2 border-violet-500 text-violet-500 flex items-center justify-center hover:bg-violet-50 transition-colors font-bold text-3xl leading-none cursor-pointer"
               >
                 +
               </button>
@@ -197,9 +210,8 @@ export default function ProdutoBase({ formik, onClose, children }: ProdutoBasePr
           </div>
 
         </div>
-        
-        {children}
 
+        {children}
       </div>
     </div>
   );

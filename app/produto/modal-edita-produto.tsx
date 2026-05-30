@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import { useFormik } from "formik";
-import axios from "axios";
-import ProdutoBase from "./produto-base";
+import ProdutoBase, { ImagensProduto } from "./produto-base";
 import { produtoSchema } from "../components/schema/produto-schema";
+import { ModalService } from "../services/ModalService";
 
 interface Produto {
-  id: string;
+  id: number;
   nome: string;
   descricao: string;
   preco: number;
   estoque: number;
   subcategoria: string;
+  imagens: { url_imagem: string; ordem: number }[];
 }
 
 interface EditaProdutoProps {
@@ -25,6 +26,28 @@ export default function EditaProduto({ produto, onClose, onSucesso }: EditaProdu
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [loadingDel, setLoadingDel] = useState(false);
 
+  const [imagensRemovidas, setImagensRemovidas] = useState<string[]>([]);
+  const [imagens, setImagens] = useState<ImagensProduto>({
+    principal: null,
+    secundarias: [null, null, null],
+  });
+
+  const handleImagensChange = (novas: ImagensProduto) => {
+    const urlPrincipalAtual = produto.imagens.find((i) => i.ordem === 1)?.url_imagem;
+    if (novas.principal && urlPrincipalAtual && !imagensRemovidas.includes(urlPrincipalAtual)) {
+      setImagensRemovidas((prev) => [...prev, urlPrincipalAtual]);
+    }
+
+    novas.secundarias.forEach((file, i) => {
+      const urlAtual = produto.imagens.find((img) => img.ordem === i + 2)?.url_imagem;
+      if (file && urlAtual && !imagensRemovidas.includes(urlAtual)) {
+        setImagensRemovidas((prev) => [...prev, urlAtual]);
+      }
+    });
+
+    setImagens(novas);
+  };
+
   const formik = useFormik({
     initialValues: {
       nome: produto.nome,
@@ -36,17 +59,21 @@ export default function EditaProduto({ produto, onClose, onSucesso }: EditaProdu
     validationSchema: produtoSchema,
     onSubmit: async (values, { setSubmitting, setStatus }) => {
       try {
-        await axios.put(`/api/produto/${produto.id}`, {
+        await ModalService.atualizarProduto(produto.id, {
           nome: values.nome,
           descricao: values.descricao,
           preco: parseFloat(values.preco),
           estoque: parseInt(values.estoque),
-          subcategoria: values.subcategoria,
+          categoria_id: parseInt(values.subcategoria),
         });
+
+        await ModalService.atualizarImagensProduto(produto.id, imagens, imagensRemovidas);
+
         onSucesso?.();
         onClose();
-      } catch {
-        setStatus("Erro ao salvar alterações. Tente novamente.");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Erro ao salvar alterações.";
+        setStatus(msg);
       } finally {
         setSubmitting(false);
       }
@@ -60,11 +87,12 @@ export default function EditaProduto({ produto, onClose, onSucesso }: EditaProdu
     }
     try {
       setLoadingDel(true);
-      await axios.delete(`/api/produto/${produto.id}`);
+      await ModalService.deletarProduto(produto.id);
       onSucesso?.();
       onClose();
-    } catch {
-      formik.setStatus("Erro ao deletar produto. Tente novamente.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Erro ao deletar produto.";
+      formik.setStatus(msg);
     } finally {
       setLoadingDel(false);
       setConfirmDelete(false);
@@ -72,11 +100,15 @@ export default function EditaProduto({ produto, onClose, onSucesso }: EditaProdu
   };
 
   return (
-    <ProdutoBase formik={formik} onClose={onClose}>
+    <ProdutoBase
+      formik={formik}
+      onClose={onClose}
+      imagens={imagens}
+      onImagensChange={handleImagensChange}
+    >
       {formik.status && (
         <p className="text-red-500 text-sm text-center mb-3">{formik.status}</p>
       )}
-
       <div className="flex flex-col gap-2">
         <button
           type="button"

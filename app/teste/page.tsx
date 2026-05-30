@@ -1,17 +1,16 @@
 'use client';
-
 import { useState } from "react";
 import CriaProduto from "../produto/modal-cria-produto";
 import EditaProduto from "../produto/modal-edita-produto";
 
-// Produto mockado para simular dados vindos do Prisma
 const produtoMock = {
-  id: "1",
+  id: 1,
   nome: "Produto Teste",
   descricao: "Essa descricao absurdamentde grande de teste para ativar a rolaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaagem",
   preco: 99.90,
   estoque: 10,
-  subcategoria: "eletronicos",
+  subcategoria: "1",
+  imagens: [],
 };
 
 export default function Teste() {
@@ -36,6 +35,7 @@ export default function Teste() {
 
       {modalAberto === "criar" && (
         <CriaProduto
+          lojaId={1}
           onClose={() => setModalAberto(null)}
           onSucesso={() => console.log("Produto criado com sucesso!")}
         />
