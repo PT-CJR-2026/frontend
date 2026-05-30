@@ -28,7 +28,7 @@ const CATEGORIAS = [
 function SecaoCategorias() {
   return (
     <section className="px-6 md:px-10 mt-10">
-      <h2 className="text-[#111] text-2xl font-semibold mb-5">Categoria</h2>
+      <h2 className="text-[#111] text-[30px] font-semibold mb-5">Categoria</h2>
 
       <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
         {CATEGORIAS.map((cat) => (
