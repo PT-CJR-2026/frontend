@@ -1,6 +1,10 @@
-import { axiosInstance } from "./BaseService";
+import { ApiService, axiosInstance } from "./BaseService";
 
-export class UsuarioService {
+export class UsuarioService extends ApiService {
+  constructor() {
+    super("/usuario");
+  }
+
   async getMe() {
     const response = await axiosInstance.get("/usuario/me");
     return response.data;
@@ -35,8 +39,10 @@ export class UsuarioService {
     return response.data;
   }
 
-  async deletarConta() {
-    const response = await axiosInstance.delete(`/usuario/me`);
+  async deletarConta(senha_hash: string) {
+    const response = await axiosInstance.delete("/usuario/me", {
+      data: { senha_hash },
+    });
     return response.data;
   }
 }
