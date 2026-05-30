@@ -134,8 +134,10 @@ export default function HomePage() {
       {/* Hero — usa slug "home" */}
       <Hero slug="home" />
 
-      {/* SearchBar — centralizada abaixo do hero */}
-      <div className="w-full flex justify-center px-4 mt-6">
+      {/* SearchBar — o componente tem w-full internamente, o que faz ele ocupar toda a largura
+    disponível e impede o justify-end de funcionar. O mt-4 dá o espaçamento em relação ao hero.
+    Caso o SearchBar seja atualizado para não ter w-full,as propiedades abaixo serão ajustadas */}
+      <div className="flex justify-end px-6 md:px-10 mt-4">
         <SearchBar />
       </div>
 
