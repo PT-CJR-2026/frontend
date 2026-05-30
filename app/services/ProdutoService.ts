@@ -7,7 +7,7 @@ export class ProdutoService extends ApiService {
   }
 
   // Por enquanto os três carrosséis usam o mesmo endpoint
-  // Quando o backend tiver ordenação, ajusta aqui
+  // Quando o backend tiver ordenação, ajustar aqui
   async getMelhoresAvaliados(): Promise<Produto[]> {
     const response = await axiosInstance.get(this.url);
     return response.data;
