@@ -1,34 +1,64 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Modal } from "@/app/components/ui/Modal";
 import { FormFields, FieldConfig } from "@/app/components/ui/FormFields";
 import { SaveButton } from "@/app/components/ui/SaveButton";
 import { ChangePasswordModal } from "@/app/components/modals/ChangePasswordModal";
+import { UsuarioService } from "@/app/services/UsuarioService";
+
+const usuarioService = new UsuarioService();
 
 interface Props {
   onClose: () => void;
-  initialData: {
-    name: string;
-    username: string;
-    email: string;
-    avatarUrl?: string;
-  };
 }
 
-export function EditProfileModal({ onClose, initialData }: Props) {
-  const [name, setName] = useState(initialData.name);
-  const [username, setUsername] = useState(initialData.username);
-  const [email, setEmail] = useState(initialData.email);
-  const [avatarPreview, setAvatarPreview] = useState(
-    initialData.avatarUrl || "",
-  );
+export function EditProfileModal({ onClose }: Props) {
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+  const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Carrega os dados reais do usuário logado
+  useEffect(() => {
+    async function carregarDados() {
+      try {
+        const usuario = await usuarioService.getMe();
+        setName(usuario.nome);
+        setUsername(usuario.username);
+        setEmail(usuario.email);
+        setAvatarPreview(usuario.foto_perfil_url || "");
+      } catch {
+        setErro("Erro ao carregar dados do usuário.");
+      }
+    }
+    carregarDados();
+  }, []);
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) {
-      setAvatarPreview(URL.createObjectURL(file));
+    if (file) setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  async function handleSalvar() {
+    setErro("");
+    setSucesso("");
+    setLoading(true);
+    try {
+      await Promise.all([
+        usuarioService.alterarNome(name),
+        usuarioService.alterarUsername(username),
+        usuarioService.alterarEmail(email),
+      ]);
+      setSucesso("Perfil atualizado com sucesso!");
+    } catch (err: any) {
+      setErro(err?.response?.data?.message || "Erro ao atualizar perfil.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -63,12 +93,11 @@ export function EditProfileModal({ onClose, initialData }: Props) {
   return (
     <Modal onClose={onClose}>
       <div className="flex flex-col items-center gap-5">
-        {/* Avatar */}
         <div
           className="relative cursor-pointer"
           onClick={() => fileRef.current?.click()}
         >
-          <img //avatarDo perfil
+          <img
             src={avatarPreview || "/ion_person.svg"}
             alt="avatar"
             className="w-24 h-24 rounded-full object-cover bg-gray-300"
@@ -92,6 +121,9 @@ export function EditProfileModal({ onClose, initialData }: Props) {
 
         <FormFields fields={fields} />
 
+        {erro && <p className="text-red-500 text-sm">{erro}</p>}
+        {sucesso && <p className="text-green-500 text-sm">{sucesso}</p>}
+
         <div className="flex flex-col items-center gap-3 mt-2">
           <SaveButton label="Deletar conta" variant="outline-red" />
           <SaveButton
@@ -99,7 +131,10 @@ export function EditProfileModal({ onClose, initialData }: Props) {
             variant="outline-purple"
             onClick={() => setShowPasswordModal(true)}
           />
-          <SaveButton label="Salvar" />
+          <SaveButton
+            label={loading ? "Salvando..." : "Salvar"}
+            onClick={handleSalvar}
+          />
         </div>
       </div>
     </Modal>

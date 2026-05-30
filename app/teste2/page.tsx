@@ -1,13 +1,42 @@
-import React from 'react';
-import { CardCategoria } from '../components/ui/CardCategoria';
-import CarrosselCategoria from '../components/ui/CarrosselCategoria';
+"use client";
+
+import { useState } from "react";
+import { UsuarioService } from "@/app/services/UsuarioService";
+
+const usuarioService = new UsuarioService();
 
 export default function TestePage() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col p-10 w-full">
-      
-      <CarrosselCategoria titulo="Categoria" />
+  const [resultado, setResultado] = useState("");
 
-    </div>    
+  async function testar(fn: () => Promise<any>) {
+    try {
+      const res = await fn();
+      setResultado(JSON.stringify(res, null, 2));
+    } catch (err: any) {
+      setResultado("ERRO: " + JSON.stringify(err?.response?.data, null, 2));
+    }
+  }
+
+  return (
+    <div
+      style={{ padding: 40, display: "flex", flexDirection: "column", gap: 12 }}
+    >
+      <h1>Teste</h1>
+
+      <button onClick={() => testar(() => usuarioService.getMe())}>
+        Buscar meus dados
+      </button>
+
+      <pre
+        style={{
+          background: "#111",
+          color: "#0f0",
+          padding: 20,
+          marginTop: 20,
+        }}
+      >
+        {resultado || "Clique para buscar"}
+      </pre>
+    </div>
   );
 }
