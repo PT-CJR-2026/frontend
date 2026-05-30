@@ -4,6 +4,7 @@ import { Modal } from "@/app/components/ui/Modal";
 import { FormFields, FieldConfig } from "@/app/components/ui/FormFields";
 import { SaveButton } from "@/app/components/ui/SaveButton";
 import { ChangePasswordModal } from "@/app/components/modals/ChangePasswordModal";
+import { DeleteAccountModal } from "@/app/components/modals/DeleteAccountModal"; // ← adiciona
 import { UsuarioService } from "@/app/services/UsuarioService";
 
 const usuarioService = new UsuarioService();
@@ -18,12 +19,12 @@ export function EditProfileModal({ onClose }: Props) {
   const [email, setEmail] = useState("");
   const [avatarPreview, setAvatarPreview] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // ← adiciona
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Carrega os dados reais do usuário logado
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -90,6 +91,16 @@ export function EditProfileModal({ onClose }: Props) {
     );
   }
 
+  if (showDeleteModal) {
+    // ← adiciona
+    return (
+      <DeleteAccountModal
+        onClose={onClose}
+        onBack={() => setShowDeleteModal(false)}
+      />
+    );
+  }
+
   return (
     <Modal onClose={onClose}>
       <div className="flex flex-col items-center gap-5">
@@ -125,7 +136,11 @@ export function EditProfileModal({ onClose }: Props) {
         {sucesso && <p className="text-green-500 text-sm">{sucesso}</p>}
 
         <div className="flex flex-col items-center gap-3 mt-2">
-          <SaveButton label="Deletar conta" variant="outline-red" />
+          <SaveButton
+            label="Deletar conta"
+            variant="outline-red"
+            onClick={() => setShowDeleteModal(true)} // ← adiciona
+          />
           <SaveButton
             label="Alterar senha"
             variant="outline-purple"
