@@ -41,6 +41,13 @@ const mockProdutos: Produto[] = [
   makeProduto(8,  "Eclair de Baunilha", "22.90",  6,  "Trufas & Cia",    "https://placehold.co/48x48/png"),
   makeProduto(9,  "Macaron",            "12.00",  30, "Pâtisserie BR",   "https://placehold.co/48x48/png"),
   makeProduto(10, "Croissant",          "9.90",   25, "Pâtisserie BR",   "https://placehold.co/48x48/png"),
+  makeProduto(11, "Alfajor",          "3.30",   15, "Trufas & Cia",   "https://placehold.co/48x48/png"),
+  makeProduto(12, "Jujuba",          "5.00",   10, "Doce Arte",   "https://placehold.co/48x48/png"),
+  makeProduto(13, "Donut",          "7.50",   8, "Doce Arte",   "https://placehold.co/48x48/png"),
+  makeProduto(14, "Pavê de Pote",   "17.30",   4, "Sweet Co.",   "https://placehold.co/48x48/png"),
+  makeProduto(15, "Pudim de Pote",   "12.50",   9, "Sweet Co.",   "https://placehold.co/48x48/png"),
+  makeProduto(16, "Rocambole",        "16.00",   4, "Doce Arte",   "https://placehold.co/48x48/png"),
+  makeProduto(17, "Churros",          "5.75",   13, "Pâtisserie BR",   "https://placehold.co/48x48/png"),
 ];
 
 export default function TestePage() {
@@ -76,7 +83,7 @@ export default function TestePage() {
           produtos={[...mockProdutos].reverse()}
           onProductClick={(p) => console.log("promoção clicada:", p)}
         />
-
+      <br />
         {/* Indice Pagina - produtos */}
         <IndicePagina
               titulo="Produtos"
