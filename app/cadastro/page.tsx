@@ -7,11 +7,13 @@ import LinkText from "@/app/components/ui/LinkText";
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation'; 
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { League_Spartan } from 'next/font/google';
+import { CadastroService } from '../services/CadastroService';
 
 const leagueSpartan = League_Spartan({ subsets: ['latin'] });
 
@@ -42,30 +44,53 @@ const validationSchema = Yup.object().shape({
     .required('A confirmação é obrigatória'),
 });
 
+const cadastroService = new CadastroService(); // Instanciando o serviço
+
 export default function Cadastro() {
+  const router = useRouter();
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
-  // Função de Submissão (Mock)
-  const onSubmit = (values: CadastroFormValues, { setSubmitting }: any) => {
-    setTimeout(() => {
-      console.log('Dados enviados:', values);
+  // função de submit
+  const onSubmit = async (values: CadastroFormValues, { setSubmitting }: any) => {
+    try {
+      await cadastroService.cadastrar({
+        nome: values.nomeCompleto,
+        username: values.username,
+        email: values.email,
+        senha_hash: values.senha,
+      });
+
       toast.success('Cadastro realizado com sucesso!');
+      
+      // 1.5 segundos até ser redirecionado pra página de login (suficiente pra ler a confirmação visual)
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+
+    } catch (error: any) {
+      // Tratamento de erros do back
+      const status = error?.response?.status;
+      if (status === 409) {
+        toast.error('Este email ou username já está cadastrado.');
+      } else {
+        toast.error('Erro ao realizar o cadastro. Tente novamente mais tarde.');
+      }
+    } finally {
+      // Libera o botão independente de dar certo ou errado
       setSubmitting(false);
-    }, 1500); // simula 1.5 segundos até dar o retorno como se estivesse esperando a resposta do back
+    }
   };
 
   return (
     <>
       <Head>
-        <title>Stock.IQ - Criar Conta</title>
+        <title>Stock.IO - Criar Conta</title>
       </Head>
 
-      {/* Container Principal: Fundo bege claro, ocupando a tela toda */}
       <main className="h-screen flex flex-col md:flex-row bg-[#F6F3E4] font-sans overflow-hidden">
         
-        
-        {/* COLUNA ESQUERDA: Wrapper Invisível */}
+        {/* COLUNA ESQUERDA */}
         <div className="w-full lg:w-[50%] min-h-screen flex flex-col pt-[50px] pl-[85px] z-10">
           
           {/* CARD ESCURO */}
@@ -179,10 +204,9 @@ export default function Cadastro() {
           </div>
         </div>
 
-        
         {/* COLUNA DIREITA: Logo e Mascote */}
         <div className="hidden md:flex flex-1 flex-col items-center justify-start relative pt-0">
-          
+
           {/* Logo */}
           <div className="w-[421px] max-w-full relative -mt-[60px]">
             <Link href={"/"}>
@@ -196,7 +220,7 @@ export default function Cadastro() {
               />
             </Link>
           </div>
-          
+
           {/* Mascote */}
           <div className="w-[497px] max-w-full relative h-[70vh]">
             <Image 
@@ -208,10 +232,10 @@ export default function Cadastro() {
               priority
             />
           </div>
-          
+
         </div>
       </main>
-      <ToastContainer position="top-right" autoClose={3000} /> {/* pop-up de confirmação de cadastro (invisível até ser chamado) */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }
