@@ -83,7 +83,11 @@ async function salvarImagensProduto(produtoId: number, imagens: ImagensProdutoDt
 
   await Promise.all(
     imagensUpadas.map(({ url_imagem, ordem }) =>
-      axiosInstance.post(`/produtos/${produtoId}/imagens`, { url_imagem, ordem })
+      axiosInstance.post(`/produto/${produtoId}/imagens`, {
+        produto_id: produtoId,
+        url_imagem,
+        ordem
+      })
     )
   );
 }
@@ -97,7 +101,7 @@ async function atualizarImagensProduto(
     await Promise.all(urlsRemovidas.map(deletarImagem));
     await Promise.all(
       urlsRemovidas.map((url) =>
-        axiosInstance.delete(`/produtos/${produtoId}/imagens`, { data: { url_imagem: url } })
+        axiosInstance.delete(`/produto/${produtoId}/imagens`, { data: { url_imagem: url } })
       )
     );
   }
