@@ -10,81 +10,58 @@ import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
 import { Produto } from "@/app/components/ui/CardProduto";
 import { ProdutoService } from "@/app/services/ProdutoService";
 
-// ─── Categorias (estáticas) ───────────────────────────────────────────────────
+// ─── Importando os seus componentes ───────────────────────────────────────────
+import CarrosselCategoria from "@/app/components/ui/CarrosselCategoria";
+import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
+import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
+import { Loja } from "./components/ui/CardLoja";
 
-const CATEGORIAS = [
-  { label: "Mercado", icon: "/icons/mercado.svg" },
-  { label: "Farmácia", icon: "/icons/farmacia.svg" },
-  { label: "Beleza", icon: "/icons/beleza.svg" },
-  { label: "Moda", icon: "/icons/moda.svg" },
-  { label: "Eletrônicos", icon: "/icons/eletronicos.svg" },
-  { label: "Jogos", icon: "/icons/jogos.svg" },
-  { label: "Brinquedos", icon: "/icons/brinquedos.svg" },
-  { label: "Casa", icon: "/icons/casa.svg" },
+// ─── Lojas Mockadas (Temporário para a Review) ────────────────────────────────
+const MOCK_LOJAS: Loja[] = [
+  { id: 1, nome: "CJR", categoria: "mercado", logoUrl: "/logosLojas/LogoCJR.png" },
+  { id: 2, nome: "Rare Beauty", categoria: "beleza", logoUrl: "/logosLojas/LogoRareB.png" },
+  { id: 3, nome: "The Croc Brew", categoria: "mercado", logoUrl: "/logosLojas/LogoCrocB.png" },
+  { id: 4, nome: "Mini Reno", categoria: "casa", logoUrl: "/logosLojas/LogoMiniReno.png" },
+  { id: 5, nome: "amoca", categoria: "moda", logoUrl: "/logosLojas/LogoAmoca.png" },
+  { id: 6, nome: "Repiit", categoria: "eletrônicos", logoUrl: "/logosLojas/LogoRepiit.png" },
+  { id: 7, nome: "Creamy Skincare", categoria: "beleza", logoUrl: "/logosLojas/LogoCreamy.png" },
+  { id: 8, nome: "Maumar", categoria: "mercado", logoUrl: "/logosLojas/LogoMaumar.png" },
+  { id: 9, nome: "SneakerStore", categoria: "moda", logoUrl: "/logosLojas/LogoSneacker.png" },
+  { id: 10, nome: "Melina Couture", categoria: "moda", logoUrl: "/logosLojas/LogoMelina.png" },
+  { id: 11, nome: "d'carts & baskets", categoria: "mercado", logoUrl: "/logosLojas/LogoBasckets.png" },
+  { id: 12, nome: "Fluffy House", categoria: "casa", logoUrl: "/logosLojas/LogoFluffy.png" },
+  { id: 13, nome: "electree", categoria: "eletrônicos", logoUrl: "/logosLojas/LogoElectree.png" },
+  { id: 14, nome: "Roots", categoria: "beleza", logoUrl: "/logosLojas/LogoRoots.png" },
 ];
+
 
 // ─── Seção Categorias ─────────────────────────────────────────────────────────
 
 function SecaoCategorias() {
   return (
     <section className="px-6 md:px-10 mt-10">
-      <h2 className="text-[#111] text-[30px] font-semibold mb-5">Categoria</h2>
-
-      <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
-        {CATEGORIAS.map((cat) => (
-          <button
-            key={cat.label}
-            className="flex flex-col items-center gap-2 shrink-0 snap-start cursor-pointer bg-transparent border-none"
-          >
-            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center hover:shadow-md transition-shadow">
-              <img
-                src={cat.icon}
-                alt={cat.label}
-                width={32}
-                height={32}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-            <span className="text-xs text-[#444] font-medium">{cat.label}</span>
-          </button>
-        ))}
-      </div>
+      {/* O seu componente substitui o HTML antigo, já trazendo o título internamente */}
+      <CarrosselCategoria titulo="Categoria" />
     </section>
   );
 }
 
-// ─── Seção Lojas (placeholder) ────────────────────────────────────────────────
-// TODO: importar CardLoja e LojaService quando o componente estiver pronto
-// Substituir o conteúdo do flex abaixo por lojas.map((loja) => <CardLoja key={loja.id} loja={loja} />)
+// ─── Seção Lojas ──────────────────────────────────────────────────────────────
 
-function SecaoLojas() {
+// Adicionamos as propriedades (props) para receber os dados filtrados e as funções da HomePage
+function SecaoLojas({ lojasFiltradas, categoriasMarcadas, onToggleCategoria }: any) {
   return (
     <section className="px-6 md:px-10 mt-12 mb-10">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-[#111] text-[30px] font-semibold">Lojas</h2>
-
-        {/*espaço para o botão de filtros, para quando tiver implementado,
-        só colocar:   <button onClick={() => abrirFiltro()} ...> */}
-        <button className="text-sm text-[#444] border border-[#ccc] rounded-full px-4 py-1.5 flex items-center gap-2 hover:border-[#6A38F3] hover:text-[#6A38F3] transition-colors">
-          filtros ▾
-        </button>
-      </div>
-
-      {/* Substituir pelos CardLoja quando o componente existir */}
-      <div className="flex gap-5 overflow-x-auto pb-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="shrink-0 w-[100px] flex flex-col items-center gap-2 opacity-30"
-          >
-            <div className="w-16 h-16 rounded-full bg-[#ccc] animate-pulse" />
-            <div className="w-14 h-2.5 rounded bg-[#ccc] animate-pulse" />
-            <div className="w-10 h-2 rounded bg-[#ccc] animate-pulse" />
-          </div>
-        ))}
-      </div>
+      <CarrosselLoja 
+        titulo="Lojas" 
+        Lojas={lojasFiltradas} 
+        acaoCabecalho={
+          <FiltroCategorias 
+            categoriasSelecionadas={categoriasMarcadas}
+            onToggleCategoria={onToggleCategoria}
+          />
+        }
+      />
     </section>
   );
 }
@@ -100,6 +77,9 @@ export default function HomePage() {
   const [maisBaratos, setMaisBaratos] = useState<Produto[]>([]);
   const [recemAdicionados, setRecemAdicionados] = useState<Produto[]>([]);
   const [loadingProdutos, setLoadingProdutos] = useState(true);
+
+  // Estado do Filtro
+  const [categoriasMarcadas, setCategoriasMarcadas] = useState<string[]>([]);
 
   useEffect(() => {
     async function carregarProdutos() {
@@ -126,6 +106,20 @@ export default function HomePage() {
     router.push(`/produto/${produto.id}`);
   }
 
+  // Lógica de gerenciar as categorias ativas
+  const toggleCategoria = (categoriaId: string) => {
+    if (categoriasMarcadas.includes(categoriaId)) {
+      setCategoriasMarcadas(categoriasMarcadas.filter(id => id !== categoriaId));
+    } else {
+      setCategoriasMarcadas([...categoriasMarcadas, categoriaId]);
+    }
+  };
+
+  // Simulação do backend
+  const lojasFiltradas = categoriasMarcadas.length === 0
+    ? MOCK_LOJAS
+    : MOCK_LOJAS.filter(loja => categoriasMarcadas.includes(loja.categoria));
+
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
       {/* Navbar — já lida com logado/deslogado internamente */}
@@ -134,9 +128,7 @@ export default function HomePage() {
       {/* Hero — usa slug "home" */}
       <Hero slug="home" />
 
-      {/* SearchBar — o componente tem w-full internamente, o que faz ele ocupar toda a largura
-    disponível e impede o justify-end de funcionar. O mt-4 dá o espaçamento em relação ao hero.
-    Caso o SearchBar seja atualizado para não ter w-full,as propiedades abaixo serão ajustadas */}
+      {/* SearchBar */}
       <div className="flex justify-end px-6 md:px-10 mt-4">
         <SearchBar />
       </div>
@@ -182,8 +174,12 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Lojas */}
-      <SecaoLojas />
+      {/* Lojas - Passando os dados e funções via props para manter o isolamento */}
+      <SecaoLojas 
+        lojasFiltradas={lojasFiltradas}
+        categoriasMarcadas={categoriasMarcadas}
+        onToggleCategoria={toggleCategoria}
+      />
     </div>
   );
 }
