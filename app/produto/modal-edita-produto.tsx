@@ -99,12 +99,22 @@ export default function EditaProduto({ produto, onClose, onSucesso }: EditaProdu
     }
   };
 
+  const urlsExistentes = {
+    principal: (produto.imagens ?? []).find((i) => i.ordem === 1)?.url_imagem,
+    secundarias: [
+      (produto.imagens ?? []).find((i) => i.ordem === 2)?.url_imagem,
+      (produto.imagens ?? []).find((i) => i.ordem === 3)?.url_imagem,
+      (produto.imagens ?? []).find((i) => i.ordem === 4)?.url_imagem,
+    ],
+  };
+
   return (
     <ProdutoBase
       formik={formik}
       onClose={onClose}
       imagens={imagens}
       onImagensChange={handleImagensChange}
+      urlsExistentes={urlsExistentes}
     >
       {formik.status && (
         <p className="text-red-500 text-sm text-center mb-3">{formik.status}</p>

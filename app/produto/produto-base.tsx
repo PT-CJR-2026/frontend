@@ -17,6 +17,7 @@ interface ProdutoBaseProps {
   onClose: () => void;
   imagens: ImagensProduto;
   onImagensChange: (imagens: ImagensProduto) => void;
+  urlsExistentes?: { principal?: string; secundarias: (string | undefined)[] };
   children?: React.ReactNode;
 }
 
@@ -31,6 +32,7 @@ export default function ProdutoBase({
   onClose,
   imagens,
   onImagensChange,
+  urlsExistentes,
   children,
 }: ProdutoBaseProps) {
   const [subcategoriaOpen, setSubcategoriaOpen] = useState(false);
@@ -70,17 +72,19 @@ export default function ProdutoBase({
           large
           value={imagens.principal}
           onChange={handlePrincipal}
+          url={urlsExistentes?.principal}
         />
 
         {/* Imagens secundárias */}
         <div className="grid grid-cols-3 gap-3 mt-3 mb-5">
-          {imagens.secundarias.map((file, i) => (
-            <ImagemInput
-              key={i}
-              value={file}
-              onChange={(f) => handleSecundaria(i, f)}
-            />
-          ))}
+        {imagens.secundarias.map((file, i) => (
+          <ImagemInput
+            key={i}
+            value={file}
+            onChange={(f) => handleSecundaria(i, f)}
+            url={urlsExistentes?.secundarias[i]}
+          />
+        ))}
         </div>
 
         <div className="flex flex-col gap-3 mb-5">

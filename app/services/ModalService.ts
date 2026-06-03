@@ -57,10 +57,18 @@ async function criarProduto(dto: CriarProdutoDto): Promise<{ id: number }> {
 }
 
 async function atualizarProduto(produtoId: number, dto: Partial<CriarProdutoDto>): Promise<void> {
-  await axiosInstance.put(`/produto/${produtoId}`, dto);
+  await axiosInstance.patch(`/produto/${produtoId}`, dto);
 }
 
 async function deletarProduto(produtoId: number): Promise<void> {
+  const { data: imagens } = await axiosInstance.get<{ url_imagem: string }[]>(
+    `/produto/${produtoId}/imagens`
+  );
+
+  if (imagens.length > 0) {
+    await Promise.all(imagens.map((i) => deletarImagem(i.url_imagem)));
+  }
+
   await axiosInstance.delete(`/produto/${produtoId}`);
 }
 

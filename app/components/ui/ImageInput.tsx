@@ -5,15 +5,16 @@ interface ImagemInputProps {
     large?: boolean;
     value?: File | null;
     onChange?: (file: File | null) => void;
+    url?: string | null;
 }
 
-export default function ImagemInput({ large = false, value, onChange }: ImagemInputProps) {
+export default function ImagemInput({ large = false, value, onChange, url }: ImagemInputProps) {
     const [internalImage, setInternalImage] = useState<{ file: File; url: string } | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const image = value !== undefined
-        ? value ? { file: value, url: URL.createObjectURL(value) } : null
+        ? value ? { file: value, url: URL.createObjectURL(value) } : (url ? { file: null as any, url } : null)
         : internalImage;
 
     const setImage = (file: File | null) => {
