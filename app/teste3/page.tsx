@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import CarrosselLoja from '../components/ui/CarrosselLoja';
-import { FiltroCategorias } from '../components/ui/FiltroCategorias';
+import { FiltroCategoria } from '../components/ui/Filtros';
 import { Loja } from '../components/ui/CardLoja';
 
 //mock de lojas vem pra cá temporariamente para o filtro funcionar sem o back por enquanto
@@ -52,9 +52,9 @@ export default function TestePage() {
         Lojas={lojasFiltradas} //passa a lista já filtrada para o carrossel
         acaoCabecalho={
 
-          <FiltroCategorias 
-            categoriasSelecionadas={categoriasMarcadas}
-            onToggleCategoria={toggleCategoria}
+          <FiltroCategoria 
+            selecionados={categoriasMarcadas}
+            onToggle={toggleCategoria}
           />
         }
       />
