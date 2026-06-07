@@ -1,0 +1,54 @@
+import React, { useState } from "react";
+import CardProduto from "./CardProduto";
+import { Produto } from "./CardProduto";
+
+export interface IndicePagina {
+    titulo: string;
+    produtos: Produto[];
+    onProductClick?: (produto: Produto) => void;
+}
+
+export default function IndicePagina({
+  titulo,
+  produtos,
+  onProductClick,
+}: IndicePagina) {
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const produtos_pagina = produtos.slice(15*(paginaAtual-1), 15*paginaAtual);
+  const numeroPaginas = Math.ceil( produtos.length / 15);
+  
+
+  return (
+    <>
+      <div className="grid grid-cols-5 grid-rows-3 gap-3 ">
+        {produtos_pagina.map((produto) => (
+          <div key={produto.id} style={{ height: "310px", width: "229px" }}>
+            <CardProduto produto={produto} onClick={onProductClick} />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
+          disabled={paginaAtual === 1}
+          className="text-black p-3 text-2xl">
+          {"<"}
+        </button>
+        
+        {Array.from({ length: numeroPaginas }, (_, i) => i + 1).map((page) => (
+          <button className={`text-black p-3 text-2xl ${page === paginaAtual ? "font-bold" : ""}`}key={page} onClick={() => setPaginaAtual(page)}>
+            {page}
+          </button>
+        ))}
+        
+        <button
+          onClick={() => setPaginaAtual((p) => Math.min(numeroPaginas, p + 1))}
+          disabled={paginaAtual === numeroPaginas}
+          className="text-black p-3 text-2xl">
+          {">"}
+        </button>
+      </div>
+    </>
+  );
+}
+
