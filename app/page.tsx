@@ -3,84 +3,48 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+// imports de components
+import CarrosselCategoria from "@/app/components/ui/CarrosselCategoria";
+import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
+import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
+import { Loja } from "./components/ui/CardLoja";
 import Hero from "@/app/components/layout/Hero";
 import Navbar from "@/app/components/layout/Navbar";
 import SearchBar from "@/app/components/ui/SearchBar";
 import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
 import { Produto } from "@/app/components/ui/CardProduto";
+
+// imports de serviços
+import { LojasService } from "./services/LojasService";
 import { ProdutoService } from "@/app/services/ProdutoService";
 
-// ─── Importando os seus componentes ───────────────────────────────────────────
-import CarrosselCategoria from "@/app/components/ui/CarrosselCategoria";
-import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
-import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
-import { Loja } from "./components/ui/CardLoja";
-
-// ─── Lojas Mockadas (Temporário para a Review) ────────────────────────────────
-const MOCK_LOJAS: Loja[] = [
-  { id: 1, nome: "CJR", categoria: "mercado", logoUrl: "/logosLojas/LogoCJR.png" },
-  { id: 2, nome: "Rare Beauty", categoria: "beleza", logoUrl: "/logosLojas/LogoRareB.png" },
-  { id: 3, nome: "The Croc Brew", categoria: "mercado", logoUrl: "/logosLojas/LogoCrocB.png" },
-  { id: 4, nome: "Mini Reno", categoria: "casa", logoUrl: "/logosLojas/LogoMiniReno.png" },
-  { id: 5, nome: "amoca", categoria: "moda", logoUrl: "/logosLojas/LogoAmoca.png" },
-  { id: 6, nome: "Repiit", categoria: "eletrônicos", logoUrl: "/logosLojas/LogoRepiit.png" },
-  { id: 7, nome: "Creamy Skincare", categoria: "beleza", logoUrl: "/logosLojas/LogoCreamy.png" },
-  { id: 8, nome: "Maumar", categoria: "mercado", logoUrl: "/logosLojas/LogoMaumar.png" },
-  { id: 9, nome: "SneakerStore", categoria: "moda", logoUrl: "/logosLojas/LogoSneacker.png" },
-  { id: 10, nome: "Melina Couture", categoria: "moda", logoUrl: "/logosLojas/LogoMelina.png" },
-  { id: 11, nome: "d'carts & baskets", categoria: "mercado", logoUrl: "/logosLojas/LogoBasckets.png" },
-  { id: 12, nome: "Fluffy House", categoria: "casa", logoUrl: "/logosLojas/LogoFluffy.png" },
-  { id: 13, nome: "electree", categoria: "eletrônicos", logoUrl: "/logosLojas/LogoElectree.png" },
-  { id: 14, nome: "Roots", categoria: "beleza", logoUrl: "/logosLojas/LogoRoots.png" },
-];
-
-
-// ─── Seção Categorias ─────────────────────────────────────────────────────────
-
-function SecaoCategorias() {
-  return (
-    <section className="px-6 md:px-10 mt-10">
-      {/* O seu componente substitui o HTML antigo, já trazendo o título internamente */}
-      <CarrosselCategoria titulo="Categoria" />
-    </section>
-  );
-}
-
-// ─── Seção Lojas ──────────────────────────────────────────────────────────────
-
-// Adicionamos as propriedades (props) para receber os dados filtrados e as funções da HomePage
-function SecaoLojas({ lojasFiltradas, categoriasMarcadas, onToggleCategoria }: any) {
-  return (
-    <section className="px-6 md:px-10 mt-12 mb-10">
-      <CarrosselLoja 
-        titulo="Lojas" 
-        Lojas={lojasFiltradas} 
-        acaoCabecalho={
-          <FiltroCategorias 
-            categoriasSelecionadas={categoriasMarcadas}
-            onToggleCategoria={onToggleCategoria}
-          />
-        }
-      />
-    </section>
-  );
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 const produtoService = new ProdutoService();
+const lojaService = new LojasService(); 
 
 export default function HomePage() {
   const router = useRouter();
 
+  // estados de produtos
   const [melhoresAvaliados, setMelhoresAvaliados] = useState<Produto[]>([]);
   const [maisBaratos, setMaisBaratos] = useState<Produto[]>([]);
   const [recemAdicionados, setRecemAdicionados] = useState<Produto[]>([]);
   const [loadingProdutos, setLoadingProdutos] = useState(true);
 
-  // Estado do Filtro
+  // estados de loja e filtro
+  const [lojas, setLojas] = useState<Loja[]>([]);
+  const [loadingLojas, setLoadingLojas] = useState(true);
   const [categoriasMarcadas, setCategoriasMarcadas] = useState<string[]>([]);
 
+  // lógica do botão do filtro
+  const toggleCategoria = (categoriaId: string) => {
+    if (categoriasMarcadas.includes(categoriaId)) {
+      setCategoriasMarcadas(categoriasMarcadas.filter(id => id !== categoriaId));
+    } else {
+      setCategoriasMarcadas([...categoriasMarcadas, categoriaId]);
+    }
+  };
+
+  // efeito de produtos (carrossel)
   useEffect(() => {
     async function carregarProdutos() {
       try {
@@ -98,34 +62,39 @@ export default function HomePage() {
         setLoadingProdutos(false);
       }
     }
-
     carregarProdutos();
   }, []);
 
+  // efeito das lojas (carrossel)
+  useEffect(() => {
+    async function carregarLojas() {
+      setLoadingLojas(true);
+      try {
+        const lojasData = await lojaService.getLojas(categoriasMarcadas);
+        setLojas(lojasData);
+      } catch (err) {
+        console.error("Erro ao carregar lojas da API:", err);
+      } finally {
+        setLoadingLojas(false);
+      }
+    }
+    carregarLojas();
+  }, [categoriasMarcadas]);
+
+  // funções de clique
   function handleProdutoClick(produto: Produto) {
     router.push(`/produto/${produto.id}`);
   }
 
-  // Lógica de gerenciar as categorias ativas
-  const toggleCategoria = (categoriaId: string) => {
-    if (categoriasMarcadas.includes(categoriaId)) {
-      setCategoriasMarcadas(categoriasMarcadas.filter(id => id !== categoriaId));
-    } else {
-      setCategoriasMarcadas([...categoriasMarcadas, categoriaId]);
-    }
-  };
-
-  // Simulação do backend
-  const lojasFiltradas = categoriasMarcadas.length === 0
-    ? MOCK_LOJAS
-    : MOCK_LOJAS.filter(loja => categoriasMarcadas.includes(loja.categoria));
+  function handleLojaClick(loja: Loja) {
+    console.log(`Página da loja ${loja.nome} em desenvolvimento.`);
+    // Futuramente: router.push(`/loja/${loja.id}`);
+  }
 
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
-      {/* Navbar — já lida com logado/deslogado internamente */}
+      {/* Navbar e Hero */}
       <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
-
-      {/* Hero — usa slug "home" */}
       <Hero slug="home" />
 
       {/* SearchBar */}
@@ -134,7 +103,9 @@ export default function HomePage() {
       </div>
 
       {/* Categorias */}
-      <SecaoCategorias />
+      <div className="px-6 md:px-10 mt-10">
+        <CarrosselCategoria titulo="Categoria" />
+      </div>
 
       {/* Carrosseis de Produtos */}
       <div className="px-6 md:px-10 mt-10 flex flex-col gap-10">
@@ -174,12 +145,24 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Lojas - Passando os dados e funções via props para manter o isolamento */}
-      <SecaoLojas 
-        lojasFiltradas={lojasFiltradas}
-        categoriasMarcadas={categoriasMarcadas}
-        onToggleCategoria={toggleCategoria}
-      />
+      {/* Lojas + Filtro integrados à API */}
+      <div className="px-6 md:px-10 mt-12 mb-10 min-h-[200px]">
+        {loadingLojas ? (
+           <p className="text-[#888] text-sm animate-pulse">Carregando lojas...</p>
+        ) : (
+          <CarrosselLoja 
+            titulo="Lojas" 
+            Lojas={lojas} 
+            onLojaClick={handleLojaClick}
+            acaoCabecalho={
+              <FiltroCategorias 
+                categoriasSelecionadas={categoriasMarcadas}
+                onToggleCategoria={toggleCategoria}
+              />
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }
