@@ -18,37 +18,46 @@ export default function IndicePagina({
   const numeroPaginas = Math.ceil( produtos.length / 15);
   
 
-  return (
-    <>
-      <div className="grid grid-cols-5 grid-rows-3 gap-3 ">
-        {produtos_pagina.map((produto) => (
-          <div key={produto.id} style={{ height: "310px", width: "229px" }}>
-            <CardProduto produto={produto} onClick={onProductClick} />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-center mt-4">
+return (
+  <div className="flex flex-col min-h-[500px] justify-between w-full">
+    <div
+        className="grid gap-3 mx-auto"
+        style={{ 
+          gridTemplateColumns: "repeat(auto-fill, 229px)",
+          maxWidth: "calc(5 * 229px + 4 * 12px)"
+        }}
+      >
+      {produtos_pagina.map((produto) => (
+        <div key={produto.id} style={{ height: "310px", width: "229px" }}>
+          <CardProduto produto={produto} onClick={onProductClick} />
+        </div>
+      ))}
+    </div>
+    <div className="flex justify-center mt-4">
+      <button
+        onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
+        disabled={paginaAtual === 1}
+        className="text-black p-3 text-2xl">
+        {"<"}
+      </button>
+
+      {Array.from({ length: numeroPaginas }, (_, i) => i + 1).map((page) => (
         <button
-          onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
-          disabled={paginaAtual === 1}
-          className="text-black p-3 text-2xl">
-          {"<"}
+          key={page}
+          className={`text-black p-3 text-2xl ${page === paginaAtual ? "font-bold" : ""}`}
+          onClick={() => setPaginaAtual(page)}>
+          {page}
         </button>
-        
-        {Array.from({ length: numeroPaginas }, (_, i) => i + 1).map((page) => (
-          <button className={`text-black p-3 text-2xl ${page === paginaAtual ? "font-bold" : ""}`}key={page} onClick={() => setPaginaAtual(page)}>
-            {page}
-          </button>
-        ))}
-        
-        <button
-          onClick={() => setPaginaAtual((p) => Math.min(numeroPaginas, p + 1))}
-          disabled={paginaAtual === numeroPaginas}
-          className="text-black p-3 text-2xl">
-          {">"}
-        </button>
-      </div>
-    </>
-  );
+      ))}
+
+      <button
+        onClick={() => setPaginaAtual((p) => Math.min(numeroPaginas, p + 1))}
+        disabled={paginaAtual === numeroPaginas}
+        className="text-black p-3 text-2xl">
+        {">"}
+      </button>
+    </div>
+  </div>
+);
 }
 

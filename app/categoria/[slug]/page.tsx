@@ -100,7 +100,6 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
               new Date(a.created_at).getTime()
           )
         );
-        console.log("categoria id:", categoria.id);
         const { data: lojasData } = await axiosInstance.get(`/lojas/categoria/${categoria.id}`);
         setLojas(lojasData);
       } else {
@@ -169,7 +168,7 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
           <p className="text-[#888] text-sm animate-pulse px-6 md:px-10">Carregando produtos...</p>
         ) : (
           <>
-            <IndicePagina titulo={nomeCategoria} produtos={produtos} />
+          <IndicePagina titulo={nomeCategoria} produtos={produtos} />
 
             <div className="mt-10 flex flex-col gap-10 px-6 md:px-10">
               {maisBaratos.length > 0 && (
