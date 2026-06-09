@@ -100,6 +100,9 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
               new Date(a.created_at).getTime()
           )
         );
+        console.log("categoria id:", categoria.id);
+        const { data: lojasData } = await axiosInstance.get(`/lojas/categoria/${categoria.id}`);
+        setLojas(lojasData);
       } else {
         const todos = await produtoService.getMelhoresAvaliados();
 
@@ -107,10 +110,6 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
         setMaisBaratos(todos);
         setRecemAdicionados(todos);
       }
-
-      const { data: lojasData } = await axiosInstance.get("/lojas");
-      setLojas(lojasData);
-
     } catch (err) {
       console.error("Erro ao carregar:", err);
     } finally {
@@ -206,8 +205,4 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
     </div>
     </div>
   );
-}
-
-function setProdutos(produtosComSubcategoria: { subcategoria: { produtoId: number; subcategoria: string; }; id: number; loja_id: number; categoria_id: number; nome: string; descricao?: string | null; preco: number | string; estoque: number; created_at: Date | string; updated_at: Date | string; imagem_produto: ImagemProduto[]; loja?: { nome: string; logo_url?: string | null; }; }[]) {
-  throw new Error("Function not implemented.");
 }
