@@ -9,13 +9,19 @@ import { useEffect, useState } from "react";
 //
 // A única responsabilidade deste hook é:
 // → Ler o localStorage para saber se existe um token salvo
-// → Expor esse estado para os componentes decidirem o que renderizar
-//    (ex: Navbar mostra "Login/Cadastre-se" ou "Perfil/Sair")
+// → Decodificar o payload do JWT para expor o username do usuário logado
+// → Expor esses estados para os componentes decidirem o que renderizar
+//    (ex: Navbar mostra "Login/Cadastre-se" ou "Perfil/Sair",
+//         PerfilPage mostra botão "Editar Perfil" se for o dono)
 // → Expor uma função de logout que remove o token do localStorage
 
 export function useAuth() {
   // Começa como false para evitar flash de conteúdo errado antes de ler o localStorage
   const [isLogado, setIsLogado] = useState(false);
+
+  // Username do usuário logado, extraído do payload do JWT
+  // null enquanto carrega ou se não estiver logado
+  const [usernameLogado, setUsernameLogado] = useState<string | null>(null);
 
   // Controla se ainda está lendo o localStorage (evita renderizar a Navbar antes de saber o estado)
   const [carregando, setCarregando] = useState(true);
@@ -24,7 +30,24 @@ export function useAuth() {
     // useEffect roda apenas no browser (nunca no servidor),
     // por isso é seguro acessar o localStorage aqui
     const token = localStorage.getItem("TOKEN_APLICACAO_FRONT");
-    setIsLogado(!!token); // true se token existir, false se não
+
+    if (token) {
+      setIsLogado(true);
+
+      // Decodifica o payload do JWT (sem biblioteca — JWT é base64 puro)
+      // O NestJS com @nestjs/jwt coloca os dados do usuário no payload
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        // TODO: confirmar o campo exato com o time de backend
+        // Comum ser: payload.username, payload.sub ou payload.email
+        const username = payload.username ?? payload.sub ?? payload.email ?? null;
+        setUsernameLogado(username);
+      } catch {
+        // Token mal-formado — trata como deslogado
+        setIsLogado(false);
+      }
+    }
+
     setCarregando(false);
   }, []); // Roda uma única vez quando o componente monta
 
@@ -33,7 +56,8 @@ export function useAuth() {
   function logout() {
     localStorage.removeItem("TOKEN_APLICACAO_FRONT");
     setIsLogado(false);
+    setUsernameLogado(null);
   }
 
-  return { isLogado, carregando, logout };
+  return { isLogado, usernameLogado, carregando, logout };
 }
