@@ -22,4 +22,9 @@ export class ProdutoService extends ApiService {
     const response = await axiosInstance.get(this.url);
     return response.data;
   }
+
+  async getPorCategoria(categoriaId: number): Promise<Produto[]> {
+    const response = await axiosInstance.get(this.url);
+    return response.data.filter((p: Produto) => p.categoria_id === categoriaId);
+  }
 }
