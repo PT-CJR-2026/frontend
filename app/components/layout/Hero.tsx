@@ -11,12 +11,17 @@ const heroConteudos: Record<string, { titulo1: string; titulo2: string; img: str
 };
 
 interface HeroProps {
-  slug: string;
+  slug?: string;
+  tituloLinha1?: string;
+  tituloLinha2?: string;
+  imagemSrc?: string;
+  imagemAlt?: string;
 }
 
-export default function Hero({ slug }: HeroProps) {
-  // busca o conteúdo correspondente, se não encontrar carrega o da home
-  const conteudo = heroConteudos[slug] || heroConteudos["home"];
+export default function Hero({ slug, tituloLinha1, tituloLinha2, imagemSrc, imagemAlt }: HeroProps) {
+  const conteudo = tituloLinha1
+    ? { titulo1: tituloLinha1, titulo2: tituloLinha2 ?? "", img: imagemSrc ?? "", alt: imagemAlt ?? "" }
+    : heroConteudos[slug ?? ""] || heroConteudos["home"];
 
   return (
     <section className="w-full bg-black flex justify-center relative h-auto md:h-[447px] overflow-hidden">
