@@ -38,25 +38,28 @@ interface PerfilUsuario {
   nome: string;
   username: string;
   email: string;
-  avatarUrl?: string;
-  produtos: Produto[];
-  lojas: Loja[];
-  avaliacoes: Avaliacao[];
+  foto_perfil_url?: string;
+  produtos?: Produto[];
+  lojas?: Loja[];
+  avaliacoes?: Avaliacao[];
 }
 
 // ─── Card de produto inline ───────────────────────────────────────────────────
 // TODO: substituir por import CardProduto from "@/app/components/ui/CardProduto"
-// quando as props estiverem alinhadas com o componente do time
 function CardProduto({ produto }: { produto: Produto }) {
   return (
     <div className="flex flex-col items-center gap-2 min-w-[120px] max-w-[130px]">
       <div className="w-[120px] h-[120px] bg-white rounded-2xl border border-[#e8e8e8] flex items-center justify-center overflow-hidden relative">
-        <Image
-          src={produto.imagem || "/placeholder-produto.png"}
-          alt={produto.nome}
-          fill
-          className="object-contain p-3"
-        />
+        {produto.imagem ? (
+          <Image
+            src={produto.imagem}
+            alt={produto.nome}
+            fill
+            className="object-contain p-3"
+          />
+        ) : (
+          <div className="w-full h-full bg-[#f0eef9] rounded-2xl" />
+        )}
       </div>
       <span className="text-[11px] text-[#333] text-center font-medium leading-tight line-clamp-2 w-full">
         {produto.nome}
@@ -75,7 +78,6 @@ function CardProduto({ produto }: { produto: Produto }) {
 
 // ─── Card de loja inline ──────────────────────────────────────────────────────
 // TODO: substituir por import CardLoja from "@/app/components/ui/CardLoja"
-// quando o componente tiver merge na develop
 function CardLoja({ loja }: { loja: Loja }) {
   return (
     <div className="flex items-center justify-between bg-white rounded-2xl px-5 py-4 w-full max-w-[260px] border border-[#e8e8e8]">
@@ -85,7 +87,7 @@ function CardLoja({ loja }: { loja: Loja }) {
         </span>
         <span className="text-[12px] text-[#6A38F3]">{loja.categoria}</span>
       </div>
-      {loja.logoUrl && (
+      {loja.logoUrl ? (
         <div className="w-10 h-10 rounded-xl overflow-hidden relative shrink-0">
           <Image
             src={loja.logoUrl}
@@ -94,6 +96,8 @@ function CardLoja({ loja }: { loja: Loja }) {
             className="object-contain"
           />
         </div>
+      ) : (
+        <div className="w-10 h-10 rounded-xl bg-[#f0eef9] shrink-0" />
       )}
     </div>
   );
@@ -104,12 +108,14 @@ function CardAvaliacao({ avaliacao }: { avaliacao: Avaliacao }) {
   return (
     <div className="bg-white rounded-2xl p-4 border border-[#e8e8e8] flex gap-3">
       <div className="w-10 h-10 rounded-full overflow-hidden relative shrink-0 bg-[#e8e8e8]">
-        <Image
-          src={avaliacao.avatarUrl || "/placeholder-avatar.png"}
-          alt={avaliacao.autor}
-          fill
-          className="object-cover"
-        />
+        {avaliacao.avatarUrl && (
+          <Image
+            src={avaliacao.avatarUrl}
+            alt={avaliacao.autor}
+            fill
+            className="object-cover"
+          />
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
@@ -139,19 +145,23 @@ function Skeleton() {
   return (
     <div className="animate-pulse">
       <div className="w-full h-[140px] bg-gray-200" />
-      <div className="flex flex-col items-start px-6 md:px-10 -mt-10 gap-3">
-        <div className="w-[80px] h-[80px] rounded-full bg-gray-200 border-4 border-[#F6F3E4]" />
-        <div className="h-5 w-40 bg-gray-200 rounded" />
-        <div className="h-3 w-28 bg-gray-200 rounded" />
-        <div className="h-3 w-36 bg-gray-200 rounded" />
-      </div>
-      <div className="flex gap-4 px-6 md:px-10 mt-8">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="w-[120px] h-[120px] bg-gray-200 rounded-2xl shrink-0"
-          />
-        ))}
+      <div className="px-6 md:px-10 max-w-4xl mx-auto">
+        <div className="flex items-end justify-between -mt-10 mb-2">
+          <div className="w-[80px] h-[80px] rounded-full bg-gray-200 border-4 border-[#F6F3E4]" />
+        </div>
+        <div className="mt-3 flex flex-col gap-2 mb-8">
+          <div className="h-5 w-48 bg-gray-200 rounded" />
+          <div className="h-3 w-28 bg-gray-200 rounded" />
+          <div className="h-3 w-40 bg-gray-200 rounded" />
+        </div>
+        <div className="flex gap-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="w-[120px] h-[120px] bg-gray-200 rounded-2xl shrink-0"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -162,10 +172,7 @@ export default function PerfilPage() {
   const params = useParams();
   const username = params?.username as string;
 
-  // Mesmo hook usado na Navbar/feed — sem duplicar lógica
   const { isLogado, usernameLogado } = useAuth();
-
-  // O usuário logado é o dono deste perfil?
   const isProprietario = isLogado && usernameLogado === username;
 
   const [usuario, setUsuario] = useState<PerfilUsuario | null>(null);
@@ -175,8 +182,6 @@ export default function PerfilPage() {
   useEffect(() => {
     if (!username) return;
 
-    // GET /usuarios/:username → retorna perfil público com produtos, lojas e avaliações
-    // Esta rota deve ser @Public() no NestJS — sem autenticação obrigatória
     async function carregarPerfil() {
       try {
         const res = await fetch(
@@ -232,37 +237,35 @@ export default function PerfilPage() {
   // ── Perfil ──
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
-      {/* Navbar — mesma da home, já lida com logado/deslogado internamente */}
       <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
 
-      {/* Banner de capa */}
-      <div className="w-full h-[140px] bg-[#171918] relative overflow-hidden flex items-center px-8">
+      {/* Banner */}
+      <div className="w-full h-[140px] bg-[#171918] flex items-center px-8">
         <button
           onClick={() => window.history.back()}
           className="text-white text-2xl hover:opacity-70 transition-opacity"
         >
           ‹
         </button>
-        {/* TODO: futuramente permitir upload de imagem de capa quando isProprietario */}
       </div>
 
       <div className="px-6 md:px-10 max-w-4xl mx-auto">
         {/* Avatar + botão editar */}
         <div className="flex items-end justify-between -mt-10 mb-2">
           <div className="w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-[#F6F3E4] shadow bg-[#e8e8e8] shrink-0">
-            <Image
-              src={usuario.avatarUrl || "/placeholder-avatar.png"}
-              alt={usuario.nome}
-              width={80}
-              height={80}
-              className="object-cover w-full h-full"
-            />
+            {usuario.foto_perfil_url && (
+              <Image
+                src={usuario.foto_perfil_url}
+                alt={usuario.nome}
+                width={80}
+                height={80}
+                className="object-cover w-full h-full"
+              />
+            )}
           </div>
 
-          {/* Botão "Editar Perfil" — só aparece se for o dono do perfil */}
           {isProprietario && (
             <button
-              // TODO: abrir EditProfileModal quando o componente tiver merge
               onClick={() => alert("TODO: abrir modal de edição")}
               className="px-5 py-2 bg-[#6A38F3] text-white text-sm font-medium rounded-full hover:bg-[#5a2de0] transition-colors"
             >
@@ -271,7 +274,7 @@ export default function PerfilPage() {
           )}
         </div>
 
-        {/* Nome, username, email */}
+        {/* Info */}
         <div className="mt-3 mb-6">
           <h1 className="text-[20px] font-bold text-[#111]">{usuario.nome}</h1>
           <span className="text-[13px] text-[#777] block mt-0.5">
@@ -282,8 +285,8 @@ export default function PerfilPage() {
           </span>
         </div>
 
-        {/* ── Seção: Produtos ── */}
-        {usuario.produtos.length > 0 && (
+        {/* Produtos */}
+        {usuario.produtos?.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[18px] font-semibold text-[#111]">
@@ -309,8 +312,8 @@ export default function PerfilPage() {
           </section>
         )}
 
-        {/* ── Seção: Lojas ── */}
-        {usuario.lojas.length > 0 && (
+        {/* Lojas */}
+        {usuario.lojas?.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[18px] font-semibold text-[#111]">Lojas</h2>
@@ -332,8 +335,8 @@ export default function PerfilPage() {
           </section>
         )}
 
-        {/* ── Seção: Avaliações ── */}
-        {usuario.avaliacoes.length > 0 && (
+        {/* Avaliações */}
+        {usuario.avaliacoes?.length > 0 && (
           <section className="mb-10">
             <h2 className="text-[18px] font-semibold text-[#111] mb-4">
               Avaliações
