@@ -80,12 +80,19 @@ function CardLoja({ loja }: { loja: Loja }) {
   return (
     <div className="flex items-center justify-between bg-white rounded-2xl px-5 py-4 w-full max-w-[260px] border border-[#e8e8e8]">
       <div>
-        <span className="text-[15px] font-semibold text-[#111] block">{loja.nome}</span>
+        <span className="text-[15px] font-semibold text-[#111] block">
+          {loja.nome}
+        </span>
         <span className="text-[12px] text-[#6A38F3]">{loja.categoria}</span>
       </div>
       {loja.logoUrl && (
         <div className="w-10 h-10 rounded-xl overflow-hidden relative shrink-0">
-          <Image src={loja.logoUrl} alt={loja.nome} fill className="object-contain" />
+          <Image
+            src={loja.logoUrl}
+            alt={loja.nome}
+            fill
+            className="object-contain"
+          />
         </div>
       )}
     </div>
@@ -106,16 +113,22 @@ function CardAvaliacao({ avaliacao }: { avaliacao: Avaliacao }) {
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-[#111]">{avaliacao.autor}</span>
+          <span className="text-[13px] font-semibold text-[#111]">
+            {avaliacao.autor}
+          </span>
           {avaliacao.estrelas && (
             <div className="flex gap-0.5">
               {Array.from({ length: avaliacao.estrelas }).map((_, i) => (
-                <span key={i} className="text-yellow-400 text-[11px]">★</span>
+                <span key={i} className="text-yellow-400 text-[11px]">
+                  ★
+                </span>
               ))}
             </div>
           )}
         </div>
-        <p className="text-[12px] text-[#555] leading-relaxed">{avaliacao.texto}</p>
+        <p className="text-[12px] text-[#555] leading-relaxed">
+          {avaliacao.texto}
+        </p>
       </div>
     </div>
   );
@@ -134,7 +147,10 @@ function Skeleton() {
       </div>
       <div className="flex gap-4 px-6 md:px-10 mt-8">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="w-[120px] h-[120px] bg-gray-200 rounded-2xl shrink-0" />
+          <div
+            key={i}
+            className="w-[120px] h-[120px] bg-gray-200 rounded-2xl shrink-0"
+          />
         ))}
       </div>
     </div>
@@ -163,7 +179,9 @@ export default function PerfilPage() {
     // Esta rota deve ser @Public() no NestJS — sem autenticação obrigatória
     async function carregarPerfil() {
       try {
-        const res = await fetch(`/api/usuarios/${username}`);
+        const res = await fetch(
+          `http://localhost:3001/usuario/username/${username}`,
+        );
         if (!res.ok) throw new Error("Não encontrado");
         const data: PerfilUsuario = await res.json();
         setUsuario(data);
@@ -194,7 +212,9 @@ export default function PerfilPage() {
         <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
         <div className="flex flex-col items-center justify-center gap-4 mt-32 px-4">
           <span className="text-5xl">😕</span>
-          <h1 className="text-lg font-semibold text-[#111]">Usuário não encontrado</h1>
+          <h1 className="text-lg font-semibold text-[#111]">
+            Usuário não encontrado
+          </h1>
           <p className="text-sm text-[#777] text-center">
             O perfil que você está procurando não existe ou foi removido.
           </p>
@@ -227,7 +247,6 @@ export default function PerfilPage() {
       </div>
 
       <div className="px-6 md:px-10 max-w-4xl mx-auto">
-
         {/* Avatar + botão editar */}
         <div className="flex items-end justify-between -mt-10 mb-2">
           <div className="w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-[#F6F3E4] shadow bg-[#e8e8e8] shrink-0">
@@ -255,15 +274,21 @@ export default function PerfilPage() {
         {/* Nome, username, email */}
         <div className="mt-3 mb-6">
           <h1 className="text-[20px] font-bold text-[#111]">{usuario.nome}</h1>
-          <span className="text-[13px] text-[#777] block mt-0.5">@{usuario.username}</span>
-          <span className="text-[12px] text-[#999] block mt-0.5">{usuario.email}</span>
+          <span className="text-[13px] text-[#777] block mt-0.5">
+            @{usuario.username}
+          </span>
+          <span className="text-[12px] text-[#999] block mt-0.5">
+            {usuario.email}
+          </span>
         </div>
 
         {/* ── Seção: Produtos ── */}
         {usuario.produtos.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[18px] font-semibold text-[#111]">Produtos</h2>
+              <h2 className="text-[18px] font-semibold text-[#111]">
+                Produtos
+              </h2>
               {isProprietario && (
                 <button
                   onClick={() => alert("TODO: adicionar produto")}
@@ -310,7 +335,9 @@ export default function PerfilPage() {
         {/* ── Seção: Avaliações ── */}
         {usuario.avaliacoes.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-[18px] font-semibold text-[#111] mb-4">Avaliações</h2>
+            <h2 className="text-[18px] font-semibold text-[#111] mb-4">
+              Avaliações
+            </h2>
             <div className="flex flex-col gap-3">
               {usuario.avaliacoes.map((avaliacao) => (
                 <CardAvaliacao key={avaliacao.id} avaliacao={avaliacao} />
@@ -318,7 +345,6 @@ export default function PerfilPage() {
             </div>
           </section>
         )}
-
       </div>
     </div>
   );
