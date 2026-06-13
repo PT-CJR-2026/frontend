@@ -20,7 +20,7 @@ type Comentario = {
   id: number;
   conteudo: string;
   created_at: string;
-  papel?: string; // ex: "dona da loja"
+  papel?: string;
   usuario: {
     username: string;
     foto_perfil_url?: string;
@@ -33,6 +33,7 @@ export default function AvaliacaoPage() {
   const [avaliacao, setAvaliacao] = useState<Avaliacao | null>(null);
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [novoComentario, setNovoComentario] = useState("");
+  const [erro, setErro] = useState(false);
 
   function tempoAtras(data?: string | Date) {
     if (!data) return "data desconhecida";
@@ -56,7 +57,7 @@ export default function AvaliacaoPage() {
   if (!novoComentario.trim()) return;
   
   try {
-    await axiosInstance.post(`/comentario`, {
+    await axiosInstance.post(`/comentario-avaliacao`, {
       conteudo: novoComentario,
       avaliacao_produto_id: id,
     });
@@ -68,18 +69,29 @@ export default function AvaliacaoPage() {
 };
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const { data } = await axiosInstance.get(`/avaliacao-produto/${id}/completo`);
-        setAvaliacao(data);
-        setComentarios(data.comentarios ?? []);
-      } catch (err) {
-        console.error("Erro ao carregar avaliação:", err);
-      }
+  async function carregar() {
+    try {
+      const avaliacaoResponse = await axiosInstance.get(`/avaliacao-produto/${id}`);
+      setAvaliacao(avaliacaoResponse.data);
+    } catch (err: any) {
+      console.log(err.response);
+      setErro(true);
+      return;
     }
-    if (id) carregar();
-  }, [id]);
 
+    try {
+      const comentariosResponse = await axiosInstance.get(`/comentario-avaliacao/produto/${id}`);
+      setComentarios(comentariosResponse.data);
+    } catch (err: any) {
+      console.log("Erro ao carregar comentários:", err.response);
+      // não seta erro pois a avaliação já carregou
+    }
+  }
+
+  if (id) carregar();
+}, [id]);
+
+  if (erro) return <p>Erro ao carregar avaliação.</p>;
   if (!avaliacao) return <p>Carregando...</p>;
 
   return (
@@ -135,7 +147,7 @@ export default function AvaliacaoPage() {
       <div className="flex flex-col px-6 py-6 gap-6">
 
        {/* Lista de comentários */}
-        <div className="border-l border-black pl-8 ml-4 flex flex-col gap-6 min-h-[40px]">
+        <div className="border-l border-black pl-8 ml-[200px] flex flex-col gap-6 min-h-[40px]">
           {comentarios.length === 0 ? (
             <p className="text-gray-400 text-sm">Nenhum comentário ainda.</p>
           ) : (
@@ -147,13 +159,13 @@ export default function AvaliacaoPage() {
                 />
                 <div>
                   <div className="flex gap-2 items-center">
-                    <p className="font-semibold text-xl">{comentario.usuario.username}</p>
+                    <p className="font-semibold text-xl text-black">{comentario.usuario.username}</p>
                     {comentario.papel && (
                       <span className="text-purple-500 text-sm">{comentario.papel}</span>
                     )}
                     <span className="text-gray-500 text-sm">{tempoAtras(comentario.created_at)}</span>
                   </div>
-                  <p className="text-lg">{comentario.conteudo}</p>
+                  <p className="text-lg text-black">{comentario.conteudo}</p>
                 </div>
               </div>
             ))
