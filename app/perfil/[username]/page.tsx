@@ -181,25 +181,25 @@ export default function PerfilPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
 
+  // Extraída fora do useEffect para poder ser chamada também após salvar no modal
+  async function carregarPerfil(usernameParam: string) {
+    try {
+      const res = await fetch(
+        `http://localhost:3001/usuario/username/${usernameParam}`,
+      );
+      if (!res.ok) throw new Error("Não encontrado");
+      const data: PerfilUsuario = await res.json();
+      setUsuario(data);
+    } catch {
+      setErro(true);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   useEffect(() => {
     if (!username) return;
-
-    async function carregarPerfil() {
-      try {
-        const res = await fetch(
-          `http://localhost:3001/usuario/username/${username}`,
-        );
-        if (!res.ok) throw new Error("Não encontrado");
-        const data: PerfilUsuario = await res.json();
-        setUsuario(data);
-      } catch {
-        setErro(true);
-      } finally {
-        setCarregando(false);
-      }
-    }
-
-    carregarPerfil();
+    carregarPerfil(username);
   }, [username]);
 
   // ── Carregando ──
@@ -354,7 +354,10 @@ export default function PerfilPage() {
 
       {/* Modal de editar perfil — só monta quando o dono do perfil clicar em Editar */}
       {isProprietario && modalAberto && (
-        <EditProfileModal onClose={() => setModalAberto(false)} />
+        <EditProfileModal
+          onClose={() => setModalAberto(false)}
+          onSalvar={() => carregarPerfil(username)}
+        />
       )}
     </div>
   );

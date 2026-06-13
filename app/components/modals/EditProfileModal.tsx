@@ -12,6 +12,7 @@ const usuarioService = new UsuarioService();
 
 interface Props {
   onClose: () => void;
+  onSalvar?: () => void; // chamado após salvar para recarregar dados da página
 }
 
 export function EditProfileModal({ onClose }: Props) {
@@ -55,15 +56,15 @@ export function EditProfileModal({ onClose }: Props) {
     setSucesso("");
     setLoading(true);
     try {
-      await Promise.all([
-        usuarioService.alterarNome(name),
-        usuarioService.alterarUsername(username),
-        usuarioService.alterarEmail(email),
-      ]);
+      // Chamadas em sequência para evitar conflito no banco
+      // e garantir que o erro de uma não afete as outras
+      await usuarioService.alterarNome(name);
+      await usuarioService.alterarUsername(username);
+      await usuarioService.alterarEmail(email);
 
       setSucesso("Perfil atualizado com sucesso!");
 
-      router.refresh(); // atualiza os dados da página sem recarregar o browser
+      onSalvar?.(); // recarrega os dados da página
 
       // Se o username mudou, redireciona para o novo perfil após 1.5s
       // Se não mudou, fica na mesma página

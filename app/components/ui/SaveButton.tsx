@@ -4,12 +4,14 @@ interface SaveButtonProps {
   label: string;
   onClick?: () => void;
   variant?: "solid" | "outline-red" | "outline-purple" | "solid-red";
+  disabled?: boolean;
 }
 
 export function SaveButton({
   label,
   onClick,
   variant = "solid",
+  disabled = false,
 }: SaveButtonProps) {
   const [hovered, setHovered] = useState(false);
 
@@ -31,6 +33,7 @@ export function SaveButton({
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -39,7 +42,8 @@ export function SaveButton({
         borderRadius: "999px",
         fontWeight: 500,
         fontSize: "0.875rem",
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
         transition: "all 0.2s",
         ...styles[variant],
       }}
