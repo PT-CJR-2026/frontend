@@ -7,8 +7,10 @@ import { SaveButton } from "@/app/components/ui/SaveButton";
 import { ChangePasswordModal } from "@/app/components/modals/ChangePasswordModal";
 import { DeleteAccountModal } from "@/app/components/modals/DeleteAccountModal";
 import { UsuarioService } from "@/app/services/UsuarioService";
+import { LoginService } from "@/app/services/LoginService";
 
 const usuarioService = new UsuarioService();
+const loginService = new LoginService();
 
 interface Props {
   onClose: () => void;
@@ -67,6 +69,9 @@ export function EditProfileModal({ onClose, onSalvar }: Props) {
       await usuarioService.alterarNome(name);
       await usuarioService.alterarUsername(username);
       await usuarioService.alterarEmail(email);
+
+      // Renova o token com os dados atualizados (necessário após mudar username/email)
+      await loginService.refresh();
 
       setSucesso("Perfil atualizado com sucesso!");
 
