@@ -63,6 +63,8 @@ export function EditProfileModal({ onClose }: Props) {
 
       setSucesso("Perfil atualizado com sucesso!");
 
+      router.refresh(); // atualiza os dados da página sem recarregar o browser
+
       // Se o username mudou, redireciona para o novo perfil após 1.5s
       // Se não mudou, fica na mesma página
       if (username !== usernameOriginal) {
