@@ -15,7 +15,7 @@ interface Props {
   onSalvar?: () => void; // chamado após salvar para recarregar dados da página
 }
 
-export function EditProfileModal({ onClose }: Props) {
+export function EditProfileModal({ onClose, onSalvar }: Props) {
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -52,6 +52,12 @@ export function EditProfileModal({ onClose }: Props) {
   }
 
   async function handleSalvar() {
+    // Garante que os dados foram carregados antes de salvar
+    if (!name || !username || !email) {
+      setErro("Aguarde os dados carregarem antes de salvar.");
+      return;
+    }
+
     setErro("");
     setSucesso("");
     setLoading(true);
@@ -166,6 +172,7 @@ export function EditProfileModal({ onClose }: Props) {
           <SaveButton
             label={loading ? "Salvando..." : "Salvar"}
             onClick={handleSalvar}
+            disabled={loading}
           />
         </div>
       </div>
