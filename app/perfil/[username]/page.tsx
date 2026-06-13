@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/components/layout/Navbar";
 import { useAuth } from "@/app/hooks/useAuth";
+import { EditProfileModal } from "@/app/components/modals/EditProfileModal";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 // TODO: mover para @/app/types quando o time padronizar
@@ -176,6 +177,7 @@ export default function PerfilPage() {
   const isProprietario = isLogado && usernameLogado === username;
 
   const [usuario, setUsuario] = useState<PerfilUsuario | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
 
@@ -266,7 +268,7 @@ export default function PerfilPage() {
 
           {isProprietario && (
             <button
-              onClick={() => alert("TODO: abrir modal de edição")}
+              onClick={() => setModalAberto(true)}
               className="px-5 py-2 bg-[#6A38F3] text-white text-sm font-medium rounded-full hover:bg-[#5a2de0] transition-colors"
             >
               Editar Perfil
@@ -349,6 +351,11 @@ export default function PerfilPage() {
           </section>
         )}
       </div>
+
+      {/* Modal de editar perfil — só monta quando o dono do perfil clicar em Editar */}
+      {isProprietario && modalAberto && (
+        <EditProfileModal onClose={() => setModalAberto(false)} />
+      )}
     </div>
   );
 }
