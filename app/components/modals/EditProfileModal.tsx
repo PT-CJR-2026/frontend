@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/hooks/useAuth";
 import { Modal } from "@/app/components/ui/Modal";
 import { FormFields, FieldConfig } from "@/app/components/ui/FormFields";
 import { SaveButton } from "@/app/components/ui/SaveButton";
@@ -19,6 +20,7 @@ interface Props {
 
 export function EditProfileModal({ onClose, onSalvar }: Props) {
   const router = useRouter();
+  const { lerToken } = useAuth();
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -72,6 +74,7 @@ export function EditProfileModal({ onClose, onSalvar }: Props) {
 
       // Renova o token com os dados atualizados (necessário após mudar username/email)
       await loginService.refresh();
+      lerToken(); // atualiza o useAuth com o novo token imediatamente
 
       setSucesso("Perfil atualizado com sucesso!");
 

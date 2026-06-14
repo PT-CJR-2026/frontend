@@ -26,29 +26,36 @@ export function useAuth() {
   // Controla se ainda está lendo o localStorage (evita renderizar a Navbar antes de saber o estado)
   const [carregando, setCarregando] = useState(true);
 
-  useEffect(() => {
-    // useEffect roda apenas no browser (nunca no servidor),
-    // por isso é seguro acessar o localStorage aqui
+  // Lê e decodifica o token do localStorage
+  // Pode ser chamada manualmente após renovar o token (ex: após mudar username)
+  function lerToken() {
     const token = localStorage.getItem("TOKEN_APLICACAO_FRONT");
 
     if (token) {
       setIsLogado(true);
 
-      // Decodifica o payload do JWT (sem biblioteca — JWT é base64 puro)
-      // O NestJS com @nestjs/jwt coloca os dados do usuário no payload
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
-        // TODO: confirmar o campo exato com o time de backend
-        // Comum ser: payload.username, payload.sub ou payload.email
-        const username = payload.username ?? payload.sub ?? payload.email ?? null;
+        const username =
+          payload.username ?? payload.sub ?? payload.email ?? null;
         setUsernameLogado(username);
       } catch {
         // Token mal-formado — trata como deslogado
         setIsLogado(false);
+        setUsernameLogado(null);
       }
+    } else {
+      setIsLogado(false);
+      setUsernameLogado(null);
     }
 
     setCarregando(false);
+  }
+
+  useEffect(() => {
+    // useEffect roda apenas no browser (nunca no servidor),
+    // por isso é seguro acessar o localStorage aqui
+    lerToken();
   }, []); // Roda uma única vez quando o componente monta
 
   // Remove o token do localStorage e atualiza o estado da UI
@@ -59,5 +66,5 @@ export function useAuth() {
     setUsernameLogado(null);
   }
 
-  return { isLogado, usernameLogado, carregando, logout };
+  return { isLogado, usernameLogado, carregando, logout, lerToken };
 }

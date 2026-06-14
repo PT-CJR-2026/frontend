@@ -21,7 +21,7 @@ export class LoginService {
     if (!token) return;
 
     const response = await axiosInstance.post(
-      "/auth/refresh",
+      "/refresh",
       {},
       { headers: { Authorization: `Bearer ${token}` } },
     );
