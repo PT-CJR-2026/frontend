@@ -45,6 +45,8 @@ export default function CardAvaliacao({
         <img
           src={avatarUrl ?? PLACEHOLDER_AVATAR}
           alt={nomeUsuario}
+          draggable="false"
+          onDragStart={(e) => e.preventDefault()}
           style={{
             width: "120px",
             height: "120px",
