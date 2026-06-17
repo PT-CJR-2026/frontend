@@ -157,7 +157,7 @@ export default function PerfilPage() {
       <div>
 
         {/* Avatar sobrepondo o banner — 180px da borda esquerda */}
-        <div className="-mt-[115px] mb-4 ml-[180px]">
+        <div className="-mt-[115px] mb-1 ml-[180px]">
           <div className="w-[230px] h-[230px] rounded-full overflow-hidden border-4 border-[#F6F3E4] shadow-lg bg-[#e8e8e8]">
             <img
               src={usuario.foto_perfil_url || "/ion_person.svg"}
@@ -169,13 +169,12 @@ export default function PerfilPage() {
 
         {/* Info + botão editar — alinhados com o avatar */}
         <div className="flex items-start justify-between mb-6 ml-[180px] pr-10">
-          <div className="flex flex-col gap-[4px]">
-            <h1 style={{ width: "318px", height: "43px" }} className="text-[22px] font-bold text-[#111] leading-none flex items-center m-0">{usuario.nome}</h1>
-            <div style={{ width: "218px", height: "27px" }} className="flex items-center">
-              <span className="text-[13px] text-[#777]">@ {usuario.username}</span>
-            </div>
-            <div style={{ width: "441px", height: "28px" }} className="flex items-center">
-              <span className="text-[12px] text-[#999]">{usuario.email}</span>
+          <div className="flex flex-col" style={{ gap: "6px" }}>
+            <h1 style={{ width: "318px" }} className="text-[22px] font-bold text-[#111] leading-none m-0 p-0">{usuario.nome}</h1>
+            <span style={{ width: "218px" }} className="text-[15px] text-[#777] leading-none">@ {usuario.username}</span>
+            <div className="flex items-center gap-[6px]">
+              <img src="/Vector.svg" alt="email" width={16} height={16} />
+              <span style={{ width: "441px" }} className="text-[15px] text-[#999] leading-none">{usuario.email}</span>
             </div>
           </div>
 
