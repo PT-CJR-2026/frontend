@@ -7,122 +7,132 @@ import SearchBar from "@/app/components/ui/SearchBar";
 import Navbar from "@/app/components/layout/Navbar";
 import Hero from "@/app/components/layout/Hero";
 import IndicePagina from "@/app/components/ui/IndicePaginas";
-import { ImagemProduto, Produto } from "@/app/components/ui/CardProduto";
+import { Produto } from "@/app/components/ui/CardProduto";
 import { ProdutoService } from "@/app/services/ProdutoService";
 import { axiosInstance } from "@/app/services/BaseService";
 import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
 import { Loja } from "@/app/components/ui/CardLoja";
+import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
 
 const produtoService = new ProdutoService();
-const categoriasMarcadas: string[] = [];
-
-{/*Mock subcategorias*/}
-const MOCK_SUBCATEGORIAS = [
-  { produtoId: 1, subcategoria: "Celulares" },
-  { produtoId: 2, subcategoria: "Celulares" },
-  { produtoId: 3, subcategoria: "Notebooks" },
-  { produtoId: 4, subcategoria: "TVs" },
-];
-
-function SecaoLojas() {
-  return (
-    <section className="px-6 md:px-10 mt-12 mb-10">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-[#111] text-[30px] font-semibold">Lojas</h2>
-        <button className="text-sm text-[#444] border border-[#ccc] rounded-full px-4 py-1.5 flex items-center gap-2 hover:border-[#6A38F3] hover:text-[#6A38F3] transition-colors">
-          filtros ▾
-        </button>
-      </div>
-      <div className="flex gap-5 overflow-x-auto pb-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="shrink-0 w-[100px] flex flex-col items-center gap-2 opacity-30">
-            <div className="w-16 h-16 rounded-full bg-[#ccc] animate-pulse" />
-            <div className="w-14 h-2.5 rounded bg-[#ccc] animate-pulse" />
-            <div className="w-10 h-2 rounded bg-[#ccc] animate-pulse" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export default function CategoriaPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const router = useRouter();
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [produtosExibidos, setProdutosExibidos] = useState<Produto[]>([]);
   const [maisBaratos, setMaisBaratos] = useState<Produto[]>([]);
   const [recemAdicionados, setRecemAdicionados] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [nomeCategoria, setNomeCategoria] = useState(slug);
   const [lojas, setLojas] = useState<Loja[]>([]);
-  const subcategorias = [
-    ...new Set(MOCK_SUBCATEGORIAS.map(item => item.subcategoria))
-  ];
-  const [subcategoriaSelecionada, setSubcategoriaSelecionada] =
-  useState<string | null>(null);
+  const [ordenacao, setOrdenacao] = useState<string>('padrao');
+  const [subcategorias, setSubcategorias] = useState<string[]>([]);
+  const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState<string | null>(null);
+  const [subcategoriasMap, setSubcategoriasMap] = useState<{ id: number; nome: string }[]>([]);
 
- useEffect(() => {
-  async function carregar() {
-    try {
-      const { data: categorias } = await axiosInstance.get("/categoria");
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const { data: categorias } = await axiosInstance.get("/categoria");
 
-      const categoria = categorias.find(
-        (c: { id: number; nome: string }) =>
-          c.nome
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\s+/g, "-") === slug
-      );
-
-      if (categoria) {
-        setNomeCategoria(categoria.nome);
-
-        const produtosFiltrados = await produtoService.getPorCategoria(
-          categoria.id
+        const categoria = categorias.find(
+          (c: { id: number; nome: string }) =>
+            c.nome
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, "-") === slug
         );
 
-        setProdutos(produtosFiltrados);
+        if (categoria) {
+          setNomeCategoria(categoria.nome);
 
-        setMaisBaratos(
-          [...produtosFiltrados].sort(
-            (a, b) =>
-              parseFloat(String(a.preco)) -
-              parseFloat(String(b.preco))
-          )
-        );
+          // Subcategorias — reutiliza o mesmo resultado de /categoria
+          const subsCompletas = categorias.filter(
+            (c: { id: number; nome: string; categoria_pai_id: number | null }) =>
+              c.categoria_pai_id === categoria.id
+          );
+          setSubcategoriasMap(subsCompletas);
+          setSubcategorias(subsCompletas.map((c: { nome: string }) => c.nome));
 
-        setRecemAdicionados(
-          [...produtosFiltrados].sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-        );
-        const { data: lojasData } = await axiosInstance.get(`/lojas/categoria/${categoria.id}`);
-        setLojas(lojasData);
-      } else {
-        const todos = await produtoService.getMelhoresAvaliados();
+          // Produtos
+          const produtosFiltrados = await produtoService.getPorCategoria(categoria.id);
+          setProdutos(produtosFiltrados);
+          setProdutosExibidos(produtosFiltrados);
 
-        setProdutos(todos);
-        setMaisBaratos(todos);
-        setRecemAdicionados(todos);
+          setMaisBaratos(
+            [...produtosFiltrados].sort(
+              (a, b) => parseFloat(String(a.preco)) - parseFloat(String(b.preco))
+            )
+          );
+
+          setRecemAdicionados(
+            [...produtosFiltrados].sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )
+          );
+
+          // Lojas
+          const { data: lojasData } = await axiosInstance.get(`/lojas/categoria/${categoria.id}`);
+          setLojas(lojasData);
+
+        } else {
+          const todos = await produtoService.getMelhoresAvaliados();
+          setProdutos(todos);
+          setProdutosExibidos(todos);
+          setMaisBaratos(todos);
+          setRecemAdicionados(todos);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Erro ao carregar:", err);
-    } finally {
-      setLoading(false);
     }
-  }
 
-  carregar();
-}, [slug]);
+    carregar();
+  }, [slug]);
+
+  // Filtra produtos ao selecionar subcategoria
+  useEffect(() => {
+    if (!subcategoriaSelecionada) {
+      setProdutosExibidos(produtos);
+      return;
+    }
+
+    const subSelecionada = subcategoriasMap.find(s => s.nome === subcategoriaSelecionada);
+    if (!subSelecionada) return;
+
+    const filtrados = produtos.filter(p => p.categoria_id === subSelecionada.id);
+    setProdutosExibidos(filtrados);
+  }, [subcategoriaSelecionada, produtos, subcategoriasMap]);
 
   function handleProdutoClick(produto: Produto) {
     router.push(`/produto/${produto.id}`);
   }
-  
+
+  function handleOrdenacao(id: string) {
+    const novaOrdenacao = ordenacao === id ? 'padrao' : id;
+    setOrdenacao(novaOrdenacao);
+
+    const base = [...produtosExibidos];
+
+    if (novaOrdenacao === 'preco') {
+      setProdutosExibidos(base.sort((a, b) =>
+        parseFloat(String(a.preco)) - parseFloat(String(b.preco))
+      ));
+    } else if (novaOrdenacao === 'recente') {
+      setProdutosExibidos(base.sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ));
+    } else {
+      // padrão: volta à ordem original
+      setProdutosExibidos([...produtos]);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
@@ -135,40 +145,57 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
         imagemAlt="Descrição do novo mascote"
       />
 
+      {/* SearchBar centralizada */}
       <div className="flex justify-end px-6 md:px-10 mt-4">
         <SearchBar />
       </div>
 
-  <div className="px-6 md:px-10 mt-4">
-    <div className="flex gap-4 overflow-x-auto pb-2">
-      {subcategorias.map((subcategoria) => (
-        <button
-          key={subcategoria}
-          onClick={() =>
-            setSubcategoriaSelecionada(prev =>
-              prev === subcategoria ? null : subcategoria
-            )
-          }
-          className={`
-            whitespace-nowrap px-6 py-2 rounded-full text-sm shadow-sm transition
-            ${subcategoriaSelecionada === subcategoria
-              ? "bg-[#6A38F3] text-white"
-              : "bg-white text-[#6A38F380] hover:bg-[#F0EAFD]"
-            }
-          `}
-        >
-          {subcategoria}
-        </button>
-        ))}
+      {/* Subcategorias + Ordenar por */}
+      <div className="flex items-center justify-between px-6 md:px-10 mt-4 gap-4">
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {subcategorias.map((subcategoria) => (
+            <button
+              key={subcategoria}
+              onClick={() =>
+                setSubcategoriaSelecionada(prev =>
+                  prev === subcategoria ? null : subcategoria
+                )
+              }
+              className={`
+                whitespace-nowrap px-6 py-2 rounded-full text-sm shadow-sm transition
+                ${subcategoriaSelecionada === subcategoria
+                  ? "bg-[#6A38F3] text-white"
+                  : "bg-white text-[#6A38F380] hover:bg-[#F0EAFD]"
+                }
+              `}
+            >
+              {subcategoria}
+            </button>
+          ))}
         </div>
-    </div>
+
+        <FiltroCategorias
+          titulo="ordenar por"
+          opcoes={[
+            { id: 'padrao', label: 'Padrão' },
+            { id: 'preco', label: 'Preço' },
+            { id: 'recente', label: 'Mais Recente' },
+          ]}
+          categoriasSelecionadas={[ordenacao]}
+          onToggleCategoria={handleOrdenacao}
+        />
+      </div>
 
       <div className="mt-10">
         {loading ? (
           <p className="text-[#888] text-sm animate-pulse px-6 md:px-10">Carregando produtos...</p>
         ) : (
           <>
-          <IndicePagina titulo={nomeCategoria} produtos={produtos} />
+            <IndicePagina
+              titulo={nomeCategoria}
+              produtos={produtosExibidos}
+              onProductClick={handleProdutoClick}
+            />
 
             <div className="mt-10 flex flex-col gap-10 px-6 md:px-10">
               {maisBaratos.length > 0 && (
@@ -193,15 +220,14 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
       </div>
 
       <div className="bg-black px-10 py-8">
-      <h2
-        className="text-white text-[30px] mb-6"
-        style={{ fontFamily: "'League Spartan', sans-serif" }}
-      >
-        Principais Lojas
-      </h2>
-
-      <CarrosselLoja Lojas={lojas} />
-    </div>
+        <h2
+          className="text-white text-[30px] mb-6"
+          style={{ fontFamily: "'League Spartan', sans-serif" }}
+        >
+          Principais Lojas
+        </h2>
+        <CarrosselLoja Lojas={lojas} />
+      </div>
     </div>
   );
 }
