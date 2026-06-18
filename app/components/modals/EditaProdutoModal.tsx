@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useFormik } from "formik";
-import ProdutoBase, { ImagensProduto } from "./produto-base";
-import { produtoSchema } from "../components/schema/produto-schema";
-import { ModalService } from "../services/ModalService";
+import ProdutoBase, { ImagensProduto } from "./ProdutoBaseModal";
+import { produtoSchema } from "../schema/produto-schema";
+import { ModalService } from "../../services/ModalService";
 
 interface Produto {
   id: number;

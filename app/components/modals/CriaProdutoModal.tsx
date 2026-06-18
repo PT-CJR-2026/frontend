@@ -2,9 +2,9 @@
 
 import { useFormik } from "formik";
 import { useState } from "react";
-import ProdutoBase, { ImagensProduto } from "./produto-base";
-import { produtoSchema, dadosVazios } from "../components/schema/produto-schema";
-import { ModalService } from "../services/ModalService";
+import ProdutoBase, { ImagensProduto } from "./ProdutoBaseModal";
+import { produtoSchema, dadosVazios } from "../schema/produto-schema";
+import { ModalService } from "../../services/ModalService";
 
 const imagensVazias: ImagensProduto = {
   principal: null,
