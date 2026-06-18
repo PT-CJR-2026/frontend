@@ -252,9 +252,9 @@ export default function PerfilPage() {
                 </button>
               )}
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {usuario.lojas.map((loja) => (
-                <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 w-full max-w-[500px] shadow-sm">
+                <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 shadow-sm shrink-0 w-[400px]">
                   <div className="flex flex-col gap-2">
                     <span className="text-[26px] font-bold text-[#111] leading-tight">{loja.nome}</span>
                     <span className="text-[15px] text-[#6A38F3] font-medium">{loja.descricao ?? ""}</span>
@@ -276,7 +276,7 @@ export default function PerfilPage() {
         {(usuario.avaliacao_loja?.length > 0 || usuario.avaliacao_produto?.length > 0) && (
           <section className="mb-10 px-[180px]">
             <h2 className="text-[18px] font-semibold text-[#111] mb-4">Avaliações</h2>
-            <div className="flex flex-col gap-3">
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
 
               {/* Avaliações de loja */}
               {usuario.avaliacao_loja?.map((av) => (
