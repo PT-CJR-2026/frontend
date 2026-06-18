@@ -13,6 +13,7 @@ import Navbar from "@/app/components/layout/Navbar";
 import SearchBar from "@/app/components/ui/SearchBar";
 import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
 import { Produto } from "@/app/components/ui/CardProduto";
+import { Categoria } from "@/app/components/ui/CarrosselCategoria";
 
 // imports de serviços
 import { LojasService } from "./services/LojasService";
@@ -91,6 +92,16 @@ export default function HomePage() {
     // Futuramente: router.push(`/loja/${loja.id}`);
   }
 
+  function handleCategoriaClick(categoria: Categoria) {
+  const slug = categoria.titulo
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-");
+
+  router.push(`/categoria/${slug}`);
+}
+
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
       {/* Navbar e Hero */}
@@ -104,7 +115,7 @@ export default function HomePage() {
 
       {/* Categorias */}
       <div className="px-6 md:px-10 mt-10">
-        <CarrosselCategoria titulo="Categoria" />
+        <CarrosselCategoria titulo="Categoria" onCategoriaClick={handleCategoriaClick} />
       </div>
 
       {/* Carrosseis de Produtos */}
