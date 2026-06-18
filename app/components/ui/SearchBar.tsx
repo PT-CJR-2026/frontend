@@ -1,11 +1,30 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SearchBar() {
+
+  const [termoBusca, setTermoBusca] = useState("");
+  const router = useRouter();
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Verifica se a tecla pressionada foi o Enter e se o input não está vazio
+    if (e.key === 'Enter' && termoBusca.trim() !== '') {
+      // Redireciona o usuário passando o termo na URL
+      // ATENÇÃO: Substitua "/busca" pela rota real de resultados do seu projeto
+      router.push(`/busca?q=${encodeURIComponent(termoBusca)}`);
+    }
+  };
+
   return (
     <div className="relative w-full max-w-[603px] h-[38px]">
       <input
         type="text"
         placeholder="Procurar por..."
+        value={termoBusca}
+        onChange={(e) => setTermoBusca(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="w-full h-full bg-white rounded-full pl-6 pr-12 text-gray-800 placeholder-[#6A38F380] focus:outline-none focus:ring-2 focus:ring-[#6A38F3] shadow-sm font-sans"
       />
       

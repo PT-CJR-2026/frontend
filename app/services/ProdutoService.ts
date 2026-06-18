@@ -24,7 +24,7 @@ export class ProdutoService extends ApiService {
   }
 
   async getPorCategoria(categoriaId: number): Promise<Produto[]> {
-    const response = await axiosInstance.get(this.url);
-    return response.data.filter((p: Produto) => p.categoria_id === categoriaId);
-  }
+  const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
+  return response.data;
+}
 }
