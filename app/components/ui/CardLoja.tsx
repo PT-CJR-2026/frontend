@@ -33,7 +33,7 @@ export function CardLoja({ loja, onClick }: CardLojaProps) {
       </h3>
       
       {/* Categoria da Loja */}
-      <span className="text-xs font-semibold text-[#6A38F3] text-center mt-0">
+      <span className="text-xs font-semibold text-[#6A38F3] text-center mt-0 uppercase">
         {loja.categoria}
       </span>
       
