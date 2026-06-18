@@ -3,104 +3,49 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+// imports de components
+import CarrosselCategoria from "@/app/components/ui/CarrosselCategoria";
+import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
+import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
+import { Loja } from "./components/ui/CardLoja";
 import Hero from "@/app/components/layout/Hero";
 import Navbar from "@/app/components/layout/Navbar";
 import SearchBar from "@/app/components/ui/SearchBar";
 import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
 import { Produto } from "@/app/components/ui/CardProduto";
+import { Categoria } from "@/app/components/ui/CarrosselCategoria";
+
+// imports de serviços
+import { LojasService } from "./services/LojasService";
 import { ProdutoService } from "@/app/services/ProdutoService";
 
-// ─── Categorias (estáticas) ───────────────────────────────────────────────────
-
-const CATEGORIAS = [
-  { label: "Mercado", icon: "/icons/mercado.svg" },
-  { label: "Farmácia", icon: "/icons/farmacia.svg" },
-  { label: "Beleza", icon: "/icons/beleza.svg" },
-  { label: "Moda", icon: "/icons/moda.svg" },
-  { label: "Eletrônicos", icon: "/icons/eletronicos.svg" },
-  { label: "Jogos", icon: "/icons/jogos.svg" },
-  { label: "Brinquedos", icon: "/icons/brinquedos.svg" },
-  { label: "Casa", icon: "/icons/casa.svg" },
-];
-
-// ─── Seção Categorias ─────────────────────────────────────────────────────────
-
-function SecaoCategorias() {
-  return (
-    <section className="px-6 md:px-10 mt-10">
-      <h2 className="text-[#111] text-[30px] font-semibold mb-5">Categoria</h2>
-
-      <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
-        {CATEGORIAS.map((cat) => (
-          <button
-            key={cat.label}
-            className="flex flex-col items-center gap-2 shrink-0 snap-start cursor-pointer bg-transparent border-none"
-          >
-            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center hover:shadow-md transition-shadow">
-              <img
-                src={cat.icon}
-                alt={cat.label}
-                width={32}
-                height={32}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-            <span className="text-xs text-[#444] font-medium">{cat.label}</span>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Seção Lojas (placeholder) ────────────────────────────────────────────────
-// TODO: importar CardLoja e LojaService quando o componente estiver pronto
-// Substituir o conteúdo do flex abaixo por lojas.map((loja) => <CardLoja key={loja.id} loja={loja} />)
-
-function SecaoLojas() {
-  return (
-    <section className="px-6 md:px-10 mt-12 mb-10">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-[#111] text-[30px] font-semibold">Lojas</h2>
-
-        {/*espaço para o botão de filtros, para quando tiver implementado,
-        só colocar:   <button onClick={() => abrirFiltro()} ...> */}
-        <button className="text-sm text-[#444] border border-[#ccc] rounded-full px-4 py-1.5 flex items-center gap-2 hover:border-[#6A38F3] hover:text-[#6A38F3] transition-colors">
-          filtros ▾
-        </button>
-      </div>
-
-      {/* Substituir pelos CardLoja quando o componente existir */}
-      <div className="flex gap-5 overflow-x-auto pb-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="shrink-0 w-[100px] flex flex-col items-center gap-2 opacity-30"
-          >
-            <div className="w-16 h-16 rounded-full bg-[#ccc] animate-pulse" />
-            <div className="w-14 h-2.5 rounded bg-[#ccc] animate-pulse" />
-            <div className="w-10 h-2 rounded bg-[#ccc] animate-pulse" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 const produtoService = new ProdutoService();
+const lojaService = new LojasService(); 
 
 export default function HomePage() {
   const router = useRouter();
 
+  // estados de produtos
   const [melhoresAvaliados, setMelhoresAvaliados] = useState<Produto[]>([]);
   const [maisBaratos, setMaisBaratos] = useState<Produto[]>([]);
   const [recemAdicionados, setRecemAdicionados] = useState<Produto[]>([]);
   const [loadingProdutos, setLoadingProdutos] = useState(true);
 
+  // estados de loja e filtro
+  const [lojas, setLojas] = useState<Loja[]>([]);
+  const [loadingLojas, setLoadingLojas] = useState(true);
+  const [categoriasMarcadas, setCategoriasMarcadas] = useState<string[]>([]);
+
+  // lógica do botão do filtro
+  const toggleCategoria = (categoriaId: string) => {
+    if (categoriasMarcadas.includes(categoriaId)) {
+      setCategoriasMarcadas(categoriasMarcadas.filter(id => id !== categoriaId));
+    } else {
+      setCategoriasMarcadas([...categoriasMarcadas, categoriaId]);
+    }
+  };
+
+  // efeito de produtos (carrossel)
   useEffect(() => {
     async function carregarProdutos() {
       try {
@@ -118,31 +63,60 @@ export default function HomePage() {
         setLoadingProdutos(false);
       }
     }
-
     carregarProdutos();
   }, []);
 
+  // efeito das lojas (carrossel)
+  useEffect(() => {
+    async function carregarLojas() {
+      setLoadingLojas(true);
+      try {
+        const lojasData = await lojaService.getLojas(categoriasMarcadas);
+        setLojas(lojasData);
+      } catch (err) {
+        console.error("Erro ao carregar lojas da API:", err);
+      } finally {
+        setLoadingLojas(false);
+      }
+    }
+    carregarLojas();
+  }, [categoriasMarcadas]);
+
+  // funções de clique
   function handleProdutoClick(produto: Produto) {
     router.push(`/produto/${produto.id}`);
   }
 
+  function handleLojaClick(loja: Loja) {
+    console.log(`Página da loja ${loja.nome} em desenvolvimento.`);
+    // Futuramente: router.push(`/loja/${loja.id}`);
+  }
+
+  function handleCategoriaClick(categoria: Categoria) {
+  const slug = categoria.titulo
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-");
+
+  router.push(`/categoria/${slug}`);
+}
+
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
-      {/* Navbar — já lida com logado/deslogado internamente */}
+      {/* Navbar e Hero */}
       <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
-
-      {/* Hero — usa slug "home" */}
       <Hero slug="home" />
 
-      {/* SearchBar — o componente tem w-full internamente, o que faz ele ocupar toda a largura
-    disponível e impede o justify-end de funcionar. O mt-4 dá o espaçamento em relação ao hero.
-    Caso o SearchBar seja atualizado para não ter w-full,as propiedades abaixo serão ajustadas */}
+      {/* SearchBar */}
       <div className="flex justify-end px-6 md:px-10 mt-4">
         <SearchBar />
       </div>
 
       {/* Categorias */}
-      <SecaoCategorias />
+      <div className="px-6 md:px-10 mt-10">
+        <CarrosselCategoria titulo="Categoria" onCategoriaClick={handleCategoriaClick} />
+      </div>
 
       {/* Carrosseis de Produtos */}
       <div className="px-6 md:px-10 mt-10 flex flex-col gap-10">
@@ -182,8 +156,24 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Lojas */}
-      <SecaoLojas />
+      {/* Lojas + Filtro integrados à API */}
+      <div className="px-6 md:px-10 mt-12 mb-10 min-h-[200px]">
+        {loadingLojas ? (
+           <p className="text-[#888] text-sm animate-pulse">Carregando lojas...</p>
+        ) : (
+          <CarrosselLoja 
+            titulo="Lojas" 
+            Lojas={lojas} 
+            onLojaClick={handleLojaClick}
+            acaoCabecalho={
+              <FiltroCategorias 
+                categoriasSelecionadas={categoriasMarcadas}
+                onToggleCategoria={toggleCategoria}
+              />
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }
