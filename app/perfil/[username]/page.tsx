@@ -190,7 +190,7 @@ export default function PerfilPage() {
 
         {/* ── Produtos (todos os produtos de todas as lojas) ── */}
         {todosProdutos.length > 0 && (
-          <section className="mb-8">
+          <section className="mb-8 px-[180px]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[18px] font-semibold text-[#111]">Produtos</h2>
               {isProprietario && (
@@ -214,7 +214,7 @@ export default function PerfilPage() {
 
         {/* ── Lojas ── */}
         {usuario.lojas.length > 0 && (
-          <section className="mb-8">
+          <section className="mb-8 px-[180px]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[18px] font-semibold text-[#111]">Lojas</h2>
               {isProprietario && (
