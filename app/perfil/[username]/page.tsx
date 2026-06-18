@@ -303,6 +303,10 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
+                    {/* TODO: substituir href pela rota real da avaliação de loja */}
+                    <a href={`#avaliacao-loja-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
+                      ver mais
+                    </a>
                   </div>
                 </div>
               ))}
@@ -332,6 +336,10 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
+                    {/* TODO: substituir href pela rota real da avaliação de produto */}
+                    <a href={`#avaliacao-produto-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
+                      ver mais
+                    </a>
                   </div>
                 </div>
               ))}
