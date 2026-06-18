@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-// Quem fez o código abaixo foi o Claude, creditos a IA
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -14,9 +14,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "qnxmixiyoohjezcqyvki.storage.supabase.co",
+        hostname: "qnxmixiyoohjezcqyvki.storage.supabase.co", // ← adicionar isso
       },
     ],
   },
 };
+
 module.exports = nextConfig;

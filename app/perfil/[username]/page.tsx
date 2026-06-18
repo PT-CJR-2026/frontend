@@ -30,6 +30,30 @@ interface LojaBackend {
   produtos: ProdutoBackend[];
 }
 
+interface AvaliacaoLoja {
+  id: number;
+  nota: number;
+  comentario?: string | null;
+  created_at: string;
+  loja: {
+    id: number;
+    nome: string;
+    logo_url?: string | null;
+  };
+}
+
+interface AvaliacaoProduto {
+  id: number;
+  nota: number;
+  comentario?: string | null;
+  created_at: string;
+  produto: {
+    id: number;
+    nome: string;
+    imagem_produto: { url_imagem: string; ordem: number }[];
+  };
+}
+
 interface PerfilUsuario {
   id: number;
   nome: string;
@@ -37,6 +61,8 @@ interface PerfilUsuario {
   email: string;
   foto_perfil_url?: string | null;
   lojas: LojaBackend[];
+  avaliacao_loja: AvaliacaoLoja[];
+  avaliacao_produto: AvaliacaoProduto[];
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -242,6 +268,74 @@ export default function PerfilPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Avaliações ── */}
+        {(usuario.avaliacao_loja?.length > 0 || usuario.avaliacao_produto?.length > 0) && (
+          <section className="mb-10 px-[180px]">
+            <h2 className="text-[18px] font-semibold text-[#111] mb-4">Avaliações</h2>
+            <div className="flex flex-col gap-3">
+
+              {/* Avaliações de loja */}
+              {usuario.avaliacao_loja?.map((av) => (
+                <div key={`loja-${av.id}`} className="bg-white rounded-2xl p-5 flex gap-4 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-[#f0eef9] shrink-0 overflow-hidden flex items-center justify-center">
+                    {av.loja.logo_url ? (
+                      <img src={av.loja.logo_url} alt={av.loja.nome} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-[10px] font-bold text-[#6A38F3] text-center px-1">{av.loja.nome}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[14px] font-semibold text-[#111]">{av.loja.nome}</span>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: av.nota }).map((_, i) => (
+                          <span key={i} className="text-yellow-400 text-[13px]">★</span>
+                        ))}
+                        {Array.from({ length: 5 - av.nota }).map((_, i) => (
+                          <span key={i} className="text-gray-300 text-[13px]">★</span>
+                        ))}
+                      </div>
+                    </div>
+                    {av.comentario && (
+                      <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Avaliações de produto */}
+              {usuario.avaliacao_produto?.map((av) => (
+                <div key={`produto-${av.id}`} className="bg-white rounded-2xl p-5 flex gap-4 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-[#f0eef9] shrink-0 overflow-hidden flex items-center justify-center">
+                    {av.produto.imagem_produto[0] ? (
+                      <img src={av.produto.imagem_produto[0].url_imagem} alt={av.produto.nome} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-[10px] font-bold text-[#6A38F3] text-center px-1">{av.produto.nome}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[14px] font-semibold text-[#111]">{av.produto.nome}</span>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: av.nota }).map((_, i) => (
+                          <span key={i} className="text-yellow-400 text-[13px]">★</span>
+                        ))}
+                        {Array.from({ length: 5 - av.nota }).map((_, i) => (
+                          <span key={i} className="text-gray-300 text-[13px]">★</span>
+                        ))}
+                      </div>
+                    </div>
+                    {av.comentario && (
+                      <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+
             </div>
           </section>
         )}
