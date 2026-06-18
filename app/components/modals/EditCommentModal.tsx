@@ -1,11 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "@/app/services/BaseService";
 import Button from "@/app/components/ui/Button";
+import { ApiService, axiosInstance } from "@/app/services/BaseService";
+
+new ApiService("/comentario-avaliacao");
 
 interface Props {
   avaliacaoProdutoId: number | string;
   comentarioAtual?: string;
+  tipo?: "avaliacao" | "comentario";
   onClose: () => void;
   onSalvo?: (novoComentario: string) => void;
 }
@@ -13,6 +16,7 @@ interface Props {
 export function EditCommentModal({
   avaliacaoProdutoId,
   comentarioAtual = "",
+  tipo = "avaliacao",
   onClose,
   onSalvo,
 }: Props) {
@@ -33,13 +37,19 @@ export function EditCommentModal({
     setErro("");
     setSalvando(true);
     try {
-      await axiosInstance.patch(`/avaliacao-produto/${avaliacaoProdutoId}`, {
-        comentario,
-      });
+      const url = tipo === "comentario"
+        ? `/comentario-avaliacao/${avaliacaoProdutoId}`
+        : `/avaliacao-produto/${avaliacaoProdutoId}`;
+
+      const body = tipo === "comentario"
+        ? { conteudo: comentario }
+        : { comentario };
+
+      await axiosInstance.patch(url, body);
       onSalvo?.(comentario);
       onClose();
     } catch (err) {
-      console.error("Erro ao editar comentário:", err);
+      console.error("Erro ao editar:", err);
       setErro("Não foi possível salvar. Tente novamente.");
     } finally {
       setSalvando(false);
