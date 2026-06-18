@@ -147,7 +147,7 @@ export default function PerfilPage() {
       <div className="w-full h-[160px] bg-[#171918] flex items-start px-8 pt-4">
         <button
           onClick={() => window.history.back()}
-          className="text-white text-2xl hover:opacity-70 transition-opacity"
+          className="text-white text-5xl font-light hover:opacity-70 transition-opacity leading-none"
         >
           ‹
         </button>
@@ -226,18 +226,21 @@ export default function PerfilPage() {
                 </button>
               )}
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 snap-x scrollbar-hide">
+            <div className="flex flex-col gap-3">
               {usuario.lojas.map((loja) => (
-                <CardLoja
-                  key={loja.id}
-                  loja={{
-                    id: loja.id,
-                    nome: loja.nome,
-                    // categoria não existe na loja — usando descrição ou string vazia
-                    categoria: loja.descricao ?? "",
-                    logoUrl: loja.logo_url ?? "",
-                  }}
-                />
+                <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 w-full max-w-[500px] shadow-sm">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[26px] font-bold text-[#111] leading-tight">{loja.nome}</span>
+                    <span className="text-[15px] text-[#6A38F3] font-medium">{loja.descricao ?? ""}</span>
+                  </div>
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-[#f5f0ff] shrink-0 flex items-center justify-center">
+                    {loja.logo_url ? (
+                      <img src={loja.logo_url} alt={loja.nome} className="w-full h-full object-contain p-2" />
+                    ) : (
+                      <span className="text-[#6A38F3] text-xs font-bold text-center px-1">{loja.nome}</span>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           </section>
