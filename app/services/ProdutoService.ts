@@ -1,5 +1,5 @@
 import { ApiService, axiosInstance } from "@/app/services/BaseService";
-import { Produto } from "@/app/components/ui/CardProduto";
+import { Produto, ImagemProduto } from "@/app/components/ui/CardProduto";
 
 export class ProdutoService extends ApiService {
   constructor() {
@@ -24,7 +24,20 @@ export class ProdutoService extends ApiService {
   }
 
   async getPorCategoria(categoriaId: number): Promise<Produto[]> {
-  const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
-  return response.data;
-}
+    const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
+    return response.data;
+  }
+
+  // Busca um único produto pelo id (usado na página de detalhes do produto)
+  async getById(id: number): Promise<Produto> {
+    const response = await axiosInstance.get(`${this.url}/${id}`);
+    return response.data;
+  }
+
+  // O endpoint GET /produto/:id não inclui imagem_Produto no include do backend,
+  // então as imagens precisam ser buscadas separadamente nesse endpoint dedicado.
+  async getImagens(produtoId: number): Promise<ImagemProduto[]> {
+    const response = await axiosInstance.get(`${this.url}/${produtoId}/imagens`);
+    return response.data;
+  }
 }
