@@ -80,6 +80,7 @@ export default function CardProduto({ produto, onClick }: CardProdutoProps) {
         <Image
           src={imagemSrc}
           alt={produto.nome}
+          draggable={false}
           fill
           className="object-contain"
           onError={() => setImgError(true)}
@@ -94,6 +95,7 @@ export default function CardProduto({ produto, onClick }: CardProdutoProps) {
           <Image
             src={logoSrc}
             alt={produto.loja?.nome ?? "Loja"}
+            draggable={false}
             fill
             sizes="40px"
             className="object-contain"
