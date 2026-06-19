@@ -1,6 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
-import { axiosInstance } from "@/app/services/BaseService";
 import { ImagensLoja } from "../components/modals/loja-base";
+import axios from "axios";
+import { ApiService } from "@/app/services/BaseService";
+
+export const axiosInstance = axios.create({
+  baseURL: "http://localhost:3001"
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("TOKEN_APLICACAO_FRONT");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -113,9 +126,11 @@ async function uploadImagemLoja(
 export interface CriarLojaDto {
   nome: string;
   descricao?: string;
+  categoria_id?: number;
 }
 
 async function criarLoja(dto: CriarLojaDto): Promise<{ id: number }> {
+  new ApiService("/lojas"); // ativa o interceptor de auth
   const { data } = await axiosInstance.post("/lojas/criarloja", dto);
   return data;
 }

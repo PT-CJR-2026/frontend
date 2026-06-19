@@ -9,9 +9,13 @@ export const lojaSchema = Yup.object({
   descricao: Yup.string()
     .max(1000, "Descrição muito longa")
     .optional(),
+
+  categoria_id: Yup.string()
+    .required("Selecione uma categoria"),
 });
 
 export const dadosVaziosLoja = {
   nome: "",
   descricao: "",
+  categoria_id: "",
 };
