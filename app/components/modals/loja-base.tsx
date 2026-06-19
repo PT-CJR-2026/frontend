@@ -1,6 +1,7 @@
 "use client";
 import { FormikProps } from "formik";
 import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 import { axiosInstance } from "../../services/ModalService";
 
 export interface ImagensLoja {
@@ -54,29 +55,10 @@ function UploadArea({ label, file, onChange, accept = "image/*" }: UploadAreaPro
         }}
       />
 
-      {file ? (
-        <div className="flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <polyline points="16 13 12 9 8 13" />
-            <line x1="12" y1="9" x2="12" y2="17" />
-          </svg>
-          <span className="text-xs text-violet-600 font-medium text-center truncate max-w-[180px]">
-            {file.name}
-          </span>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <polyline points="16 13 12 9 8 13" />
-            <line x1="12" y1="9" x2="12" y2="17" />
-          </svg>
-          <span className="text-xs text-gray-500 text-center">{label}</span>
-        </div>
-      )}
+      <Image src="/Vector-export.svg" alt="upload" width={32} height={32} />
+      <span className="text-xs text-gray-500 text-center">
+        {file ? file.name : label}
+      </span>
     </div>
   );
 }
@@ -94,7 +76,6 @@ export default function LojaBase({
     axiosInstance
       .get("/categoria")
       .then((res) => {
-        // filtra só categorias raiz (sem pai)
         const principais = res.data.filter(
           (c: Categoria & { categoria_pai_id: number | null }) =>
             c.categoria_pai_id === null
@@ -136,7 +117,7 @@ export default function LojaBase({
               value={formik.values.nome}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className="w-full h-12 rounded-full border border-gray-200 px-5 text-sm outline-none focus:border-violet-500 transition-colors"
+              className="w-full h-12 rounded-full border border-gray-300 px-5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-500 transition-colors"
             />
             {formik.touched.nome && formik.errors.nome && (
               <p className="text-red-500 text-xs mt-1 pl-4">{String(formik.errors.nome)}</p>
@@ -152,7 +133,7 @@ export default function LojaBase({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               rows={3}
-              className="w-full rounded-2xl border border-gray-200 px-5 py-3 text-sm outline-none focus:border-violet-500 transition-colors resize-none"
+              className="w-full rounded-2xl border border-gray-300 px-5 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-500 transition-colors resize-none"
             />
             {formik.touched.descricao && formik.errors.descricao && (
               <p className="text-red-500 text-xs mt-1 pl-4">{String(formik.errors.descricao)}</p>
@@ -166,7 +147,7 @@ export default function LojaBase({
               value={formik.values.categoria_id}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className={`w-full h-12 rounded-full border border-gray-200 px-5 text-sm outline-none appearance-none focus:border-violet-500 transition-colors ${
+              className={`w-full h-12 rounded-full border border-gray-300 px-5 text-sm outline-none appearance-none focus:border-violet-500 transition-colors ${
                 formik.values.categoria_id === "" ? "text-gray-400" : "text-gray-800"
               }`}
             >
@@ -205,7 +186,6 @@ export default function LojaBase({
             />
           </div>
 
-          {/* Slot para botão e erros do pai */}
           {children}
         </div>
       </div>
