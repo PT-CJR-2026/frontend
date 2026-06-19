@@ -1,18 +1,18 @@
 "use client";
 
-import Navbar from "../components/layout/Navbar";
-import CarrosselAvaliacao, { Avaliacao } from "../components/ui/CarrosselAvaliacao";
-import NotaEstrela from "../components/ui/NotaEstrela";
-import GaleriaProduto from "../components/ui/GaleriaProduto";
-import EditaProduto from "../components/modals/EditaProdutoModal";
+import Navbar from "../../components/layout/Navbar";
+import CarrosselAvaliacao, { Avaliacao } from "../../components/ui/CarrosselAvaliacao";
+import NotaEstrela from "../../components/ui/NotaEstrela";
+import GaleriaProduto from "../../components/ui/GaleriaProduto";
+import EditaProduto from "../../components/modals/EditaProdutoModal";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   AvaliacaoProdutoService,
   mapAvaliacaoProdutoParaCard,
-} from "../services/AvaliacaoService";
-import { ProdutoService } from "../services/ProdutoService";
-import { Produto } from "../components/ui/CardProduto";
+} from "../../services/AvaliacaoService";
+import { ProdutoService } from "../../services/ProdutoService";
+import { Produto } from "../../components/ui/CardProduto";
 
 const avaliacaoProdutoService = new AvaliacaoProdutoService();
 const produtoService = new ProdutoService();
