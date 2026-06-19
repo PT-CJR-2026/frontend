@@ -15,13 +15,25 @@ interface GaleriaProdutoProps {
 export default function GaleriaProduto({ nome, imagens }: GaleriaProdutoProps) {
   const imagensOrdenadas = [...(imagens ?? [])].sort((a, b) => a.ordem - b.ordem);
   const [indiceAtivo, setIndiceAtivo] = useState(0);
+  const [errosCarregamento, setErrosCarregamento] = useState<Set<number>>(new Set());
 
-  const imagemAtiva =
-    imagensOrdenadas[indiceAtivo]?.url_imagem ?? PLACEHOLDER_PRODUCT;
+  const marcarErro = (idx: number) => {
+    setErrosCarregamento((prev) => {
+      if (prev.has(idx)) return prev;
+      const novo = new Set(prev);
+      novo.add(idx);
+      return novo;
+    });
+  };
+
+  const obterSrc = (idx: number) => {
+    if (errosCarregamento.has(idx)) return PLACEHOLDER_PRODUCT;
+    return imagensOrdenadas[idx]?.url_imagem || PLACEHOLDER_PRODUCT;
+  };
 
   if (imagensOrdenadas.length === 0) {
     return (
-      <div className="flex gap-4">
+      <div className="w-full lg:w-[700px] shrink-0 flex gap-4">
         <div className="relative w-full max-w-[550px] aspect-square rounded-[28px] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] overflow-hidden">
           <Image
             src={PLACEHOLDER_PRODUCT}
@@ -36,7 +48,7 @@ export default function GaleriaProduto({ nome, imagens }: GaleriaProdutoProps) {
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="w-full lg:w-[700px] shrink-0 flex gap-4">
       {/* Miniaturas */}
       <div className="flex flex-col gap-3 w-[130px] shrink-0">
         {imagensOrdenadas.map((img, idx) => (
@@ -53,25 +65,28 @@ export default function GaleriaProduto({ nome, imagens }: GaleriaProdutoProps) {
             ].join(" ")}
           >
             <Image
-              src={img.url_imagem}
+              src={obterSrc(idx)}
               alt={`${nome} - imagem ${idx + 1}`}
               fill
               className="object-contain p-2"
               unoptimized
+              onError={() => marcarErro(idx)}
             />
           </button>
         ))}
       </div>
 
       {/* Imagem principal */}
-      <div className="relative flex-1 max-w-[550px] aspect-square rounded-[28px] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] overflow-hidden">
+      <div className="relative flex-1 min-w-0 max-w-[550px] aspect-square rounded-[28px] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] overflow-hidden">
         <Image
-          src={imagemAtiva}
+          key={indiceAtivo}
+          src={obterSrc(indiceAtivo)}
           alt={nome}
           fill
           className="object-contain p-10"
           unoptimized
           priority
+          onError={() => marcarErro(indiceAtivo)}
         />
       </div>
     </div>

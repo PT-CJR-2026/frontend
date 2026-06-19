@@ -2,11 +2,12 @@
 
 import Navbar from "../../components/layout/Navbar";
 import CarrosselAvaliacao, { Avaliacao } from "../../components/ui/CarrosselAvaliacao";
+import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import NotaEstrela from "../../components/ui/NotaEstrela";
 import GaleriaProduto from "../../components/ui/GaleriaProduto";
 import EditaProduto from "../../components/modals/EditaProdutoModal";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   AvaliacaoProdutoService,
   mapAvaliacaoProdutoParaCard,
@@ -128,9 +129,45 @@ function useProduto(produtoId: number) {
   return { produto, carregando, erro };
 }
 
+function useProdutosDaMesmaLoja(produtoAtual: Produto | null) {
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (!produtoAtual) return;
+
+    let ativo = true;
+    setCarregando(true);
+    produtoService
+      .getMelhoresAvaliados()
+      .then((todos) => {
+        if (!ativo) return;
+        const daMesmaLoja = todos.filter(
+          (p) => p.loja_id === produtoAtual.loja_id && p.id !== produtoAtual.id
+        );
+        setProdutos(daMesmaLoja);
+      })
+      .catch(() => {
+        if (!ativo) return;
+        setProdutos([]);
+      })
+      .finally(() => {
+        if (!ativo) return;
+        setCarregando(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, [produtoAtual?.id, produtoAtual?.loja_id]);
+
+  return { produtos, carregando };
+}
+
 export default function ProdutoPage() {
   const params = useParams();
-  const produtoId = Number(params?.id ?? 25);
+  const router = useRouter();
+  const produtoId = Number(params?.id);
 
   const { produto, carregando, erro } = useProduto(produtoId);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
@@ -139,6 +176,8 @@ export default function ProdutoPage() {
     () => avaliacaoProdutoService.findByProduto(produtoId),
     mapAvaliacaoProdutoParaCard
   );
+
+  const { produtos: produtosDaMesmaLoja } = useProdutosDaMesmaLoja(produto);
 
   if (carregando) {
     return (
@@ -204,7 +243,7 @@ export default function ProdutoPage() {
             </div>
           </div>
 
-          {/* Rating + mercado + estoque */}
+          {/* Nota + mercado (é um mock) + estoque */}
           <div className="flex items-center gap-2 mt-2 text-sm">
             <NotaEstrela nota={avaliacoesProduto.media} tamanho={16} />
             <span className="text-[#111] font-medium">
@@ -236,6 +275,18 @@ export default function ProdutoPage() {
           </div>
         </div>
       </div>
+
+      {/* Produtos da mesma loja */}
+      {produtosDaMesmaLoja.length > 0 && (
+        <div className="px-6 md:px-10 mt-12">
+          <CarrosselCardProdutos
+            titulo="Da mesma loja"
+            ordenacao=""
+            produtos={produtosDaMesmaLoja}
+            onProductClick={(p) => router.push(`/produto/${p.id}`)}
+          />
+        </div>
+      )}
 
       {/* Avaliações */}
       <div className="px-6 md:px-10 mt-12 mb-12">
