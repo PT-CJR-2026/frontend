@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { ApiService } from "@/app/services/BaseService";
 import { ImagensLoja } from "../components/modals/loja-base";
 import axios from "axios";
-import { ApiService } from "@/app/services/BaseService";
 
 export const axiosInstance = axios.create({
   baseURL: "http://localhost:3001"
@@ -129,7 +129,6 @@ export interface CriarLojaDto {
 }
 
 async function criarLoja(dto: CriarLojaDto): Promise<{ id: number }> {
-  new ApiService("/lojas"); // ativa o interceptor de auth
   const { data } = await axiosInstance.post("/lojas/criarloja", dto);
   return data;
 }
