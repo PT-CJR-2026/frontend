@@ -21,7 +21,6 @@ export default function CriaLoja({ onClose, onSucesso }: CriaLojaProps) {
         const loja = await ModalService.criarLoja({
           nome: values.nome,
           descricao: values.descricao,
-          categoria_id: parseInt(values.categoria_id),
         });
 
         await ModalService.salvarImagensLoja(loja.id, imagens);

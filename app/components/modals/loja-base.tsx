@@ -1,8 +1,7 @@
 "use client";
 import { FormikProps } from "formik";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { axiosInstance } from "../../services/ModalService";
 
 export interface ImagensLoja {
   logo: File | null;
@@ -15,11 +14,6 @@ export const imagensLojasVazias: ImagensLoja = {
   banner: null,
   sticker: null,
 };
-
-interface Categoria {
-  id: number;
-  nome: string;
-}
 
 interface LojaBaseProps {
   formik: FormikProps<any>;
@@ -54,7 +48,6 @@ function UploadArea({ label, file, onChange, accept = "image/*" }: UploadAreaPro
           onChange(f);
         }}
       />
-
       <Image src="/Vector-export.svg" alt="upload" width={32} height={32} />
       <span className="text-xs text-gray-500 text-center">
         {file ? file.name : label}
@@ -70,26 +63,10 @@ export default function LojaBase({
   onImagensChange,
   children,
 }: LojaBaseProps) {
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-
-  useEffect(() => {
-    axiosInstance
-      .get("/categoria")
-      .then((res) => {
-        const principais = res.data.filter(
-          (c: Categoria & { categoria_pai_id: number | null }) =>
-            c.categoria_pai_id === null
-        );
-        setCategorias(principais);
-      })
-      .catch(() => setCategorias([]));
-  }, []);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-md mx-4 p-8 relative">
 
-        {/* Botão fechar */}
         <button
           type="button"
           onClick={onClose}
@@ -108,7 +85,6 @@ export default function LojaBase({
 
         <div className="flex flex-col gap-3">
 
-          {/* Nome da loja */}
           <div>
             <input
               type="text"
@@ -124,7 +100,6 @@ export default function LojaBase({
             )}
           </div>
 
-          {/* Descrição */}
           <div>
             <textarea
               name="descricao"
@@ -140,33 +115,6 @@ export default function LojaBase({
             )}
           </div>
 
-          {/* Categoria */}
-          <div className="relative">
-            <select
-              name="categoria_id"
-              value={formik.values.categoria_id}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`w-full h-12 rounded-full border border-gray-300 px-5 text-sm outline-none appearance-none focus:border-violet-500 transition-colors ${
-                formik.values.categoria_id === "" ? "text-gray-400" : "text-gray-800"
-              }`}
-            >
-              <option value="" disabled>Categoria</option>
-              {categorias.map((c) => (
-                <option key={c.id} value={String(c.id)}>
-                  {c.nome}
-                </option>
-              ))}
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-            {formik.touched.categoria_id && formik.errors.categoria_id && (
-              <p className="text-red-500 text-xs mt-1 pl-4">{String(formik.errors.categoria_id)}</p>
-            )}
-          </div>
-
-          {/* Uploads */}
           <div className="flex flex-col gap-2 mt-1">
             <UploadArea
               label="Anexe a foto de perfil de sua loja"

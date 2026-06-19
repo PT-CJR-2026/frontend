@@ -126,7 +126,6 @@ async function uploadImagemLoja(
 export interface CriarLojaDto {
   nome: string;
   descricao?: string;
-  categoria_id?: number;
 }
 
 async function criarLoja(dto: CriarLojaDto): Promise<{ id: number }> {
