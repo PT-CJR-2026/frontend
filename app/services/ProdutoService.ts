@@ -32,4 +32,18 @@ export class ProdutoService extends ApiService {
     const response = await axiosInstance.get(`${this.url}/${produtoId}`);
     return response.data;
   }
+
+  async getByTermo(termo: string): Promise<Produto[]> {
+    const response = await axiosInstance.get(`${this.url}/busca`, {
+      params: { q: termo },
+    });
+    return response.data;
+  }
+
+  async getSugestoes(termo: string, limit = 5): Promise<Produto[]> {
+    const response = await axiosInstance.get(`${this.url}/sugestoes`, {
+      params: { q: termo, limit },
+    });
+    return response.data;
+  }
 }
