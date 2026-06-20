@@ -8,6 +8,8 @@ interface HeroLojaProps {
   bannerUrl: string;
   criador: string;
   usernameCriador: string;
+  isOwner?: boolean;
+  onAddProductClick?: () => void;
 }
 
 export default function HeroLoja({ 
@@ -16,7 +18,9 @@ export default function HeroLoja({
   nota, 
   bannerUrl, 
   criador,
-  usernameCriador 
+  usernameCriador, 
+  isOwner,
+  onAddProductClick
 }: HeroLojaProps) {
   
 const renderStars = (notaBase: number) => {
@@ -59,6 +63,23 @@ const renderStars = (notaBase: number) => {
 
   return (
     <section className="w-full relative aspect-[1440/539] flex flex-col items-center justify-center overflow-hidden">
+
+      {/* BOTÕES DE AÇÃO (Aparecem apenas se for dono) */}
+      {isOwner && (
+        <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+          {/* Botão de Editar (placeholder por enquanto) */}
+          <button className="bg-violet-600 p-2 rounded-full text-white hover:bg-violet-700 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          </button>
+          {/* Botão de + (Abre o modal de criar produto) */}
+          <button 
+            onClick={onAddProductClick}
+            className="bg-violet-600 p-2 rounded-full text-white hover:bg-violet-700 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+      )}
       
       <div className="absolute inset-0 z-0">
               {bannerUrl ? (
