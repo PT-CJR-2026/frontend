@@ -1,9 +1,9 @@
 'use client';
 import { useState } from "react";
-import CriaProduto from "../produto/modal-cria-produto";
-import EditaProduto from "../produto/modal-edita-produto";
+import CriaProduto from "../components/modals/CriaProdutoModal";
+import EditaProduto from "../components/modals/EditaProdutoModal";
 import CardProduto from "@/app/components/ui/CardProduto";
-import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
+import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import Navbar from "../components/layout/Navbar";
 import { Produto } from "@/app/components/ui/CardProduto";
 import IndicePagina from "../components/ui/IndicePaginas";

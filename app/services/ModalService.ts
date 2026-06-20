@@ -58,7 +58,8 @@ async function criarProduto(dto: CriarProdutoDto): Promise<{ id: number }> {
 }
 
 async function atualizarProduto(produtoId: number, dto: Partial<CriarProdutoDto>): Promise<void> {
-  await axiosInstance.put(`/produto/${produtoId}`, dto);
+  // Backend usa @Patch(':id') no ProdutoController, não @Put
+  await axiosInstance.patch(`/produto/${produtoId}`, dto);
 }
 
 async function deletarProduto(produtoId: number): Promise<void> {
@@ -78,6 +79,7 @@ async function salvarImagensProduto(produtoId: number, imagens: ImagensProdutoDt
   const uploads = todasImagens.map(({ file, ordem }) =>
     uploadImagem(file, produtoId, ordem).then((url_imagem) => ({ url_imagem, ordem }))
   );
+
   const imagensUpadas = await Promise.all(uploads);
 
   await Promise.all(

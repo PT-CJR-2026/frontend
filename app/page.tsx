@@ -11,7 +11,7 @@ import { Loja } from "./components/ui/CardLoja";
 import Hero from "@/app/components/layout/Hero";
 import Navbar from "@/app/components/layout/Navbar";
 import SearchBar from "@/app/components/ui/SearchBar";
-import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
+import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import { Produto } from "@/app/components/ui/CardProduto";
 import { Categoria } from "@/app/components/ui/CarrosselCategoria";
 
