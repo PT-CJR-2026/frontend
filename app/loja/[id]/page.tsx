@@ -186,7 +186,8 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         {/* Carrossel alinhado à esquerda */}
         <div className="w-full pl-6 md:pl-10">
           {avaliacoesMapeadas.length > 0 ? (
-            <CarrosselAvaliacao avaliacoes={avaliacoesMapeadas} />
+            <CarrosselAvaliacao avaliacoes={avaliacoesMapeadas}
+            onAvaliacaoClick={(avaliacao) => router.push(`/avaliacao-loja/${avaliacao.id}`)} />
           ) : (
             <p className="text-[#888] text-center text-sm w-full pr-6 md:pr-10">
               Esta loja ainda não possui avaliações.
