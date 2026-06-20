@@ -10,7 +10,7 @@ import { Produto } from "@/app/components/ui/CardProduto";
 // Importações dos componentes da equipa
 import CarrosselAvaliacao from "@/app/components/ui/CarrosselAvaliacao";
 import NotaEstrela from "@/app/components/ui/NotaEstrela";
-import IndicePagina from "@/app/components/ui/IndicePaginas"; // ✅ Importação do Grid
+import IndicePagina from "@/app/components/ui/IndicePaginas";
 
 // Tipagem espelhada no JSON do Back-end
 interface AvaliacaoAPI {
