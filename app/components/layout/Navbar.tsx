@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Button from "@/app/components/ui/Button";
 import LinkText from "@/app/components/ui/LinkText";
