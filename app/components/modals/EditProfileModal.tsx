@@ -1,25 +1,34 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/hooks/useAuth";
 import { Modal } from "@/app/components/ui/Modal";
 import { FormFields, FieldConfig } from "@/app/components/ui/FormFields";
 import { SaveButton } from "@/app/components/ui/SaveButton";
 import { ChangePasswordModal } from "@/app/components/modals/ChangePasswordModal";
-import { DeleteAccountModal } from "@/app/components/modals/DeleteAccountModal"; // ← adiciona
+import { DeleteAccountModal } from "@/app/components/modals/DeleteAccountModal";
 import { UsuarioService } from "@/app/services/UsuarioService";
+import { LoginService } from "@/app/services/LoginService";
 
 const usuarioService = new UsuarioService();
+const loginService = new LoginService();
 
 interface Props {
   onClose: () => void;
+  onSalvar?: () => void; // chamado após salvar para recarregar dados da página
 }
 
-export function EditProfileModal({ onClose }: Props) {
+export function EditProfileModal({ onClose, onSalvar }: Props) {
+  const router = useRouter();
+  const { lerToken } = useAuth();
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
+  const [usernameOriginal, setUsernameOriginal] = useState(""); // ← guarda o username antes de editar
   const [email, setEmail] = useState("");
   const [avatarPreview, setAvatarPreview] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // ← adiciona
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,6 +40,7 @@ export function EditProfileModal({ onClose }: Props) {
         const usuario = await usuarioService.getMe();
         setName(usuario.nome);
         setUsername(usuario.username);
+        setUsernameOriginal(usuario.username); // ← salva o original
         setEmail(usuario.email);
         setAvatarPreview(usuario.foto_perfil_url || "");
       } catch {
@@ -46,16 +56,38 @@ export function EditProfileModal({ onClose }: Props) {
   }
 
   async function handleSalvar() {
+    // Garante que os dados foram carregados antes de salvar
+    if (!name || !username || !email) {
+      setErro("Aguarde os dados carregarem antes de salvar.");
+      return;
+    }
+
     setErro("");
     setSucesso("");
     setLoading(true);
     try {
-      await Promise.all([
-        usuarioService.alterarNome(name),
-        usuarioService.alterarUsername(username),
-        usuarioService.alterarEmail(email),
-      ]);
+      // Chamadas em sequência para evitar conflito no banco
+      // e garantir que o erro de uma não afete as outras
+      await usuarioService.alterarNome(name);
+      await usuarioService.alterarUsername(username);
+      await usuarioService.alterarEmail(email);
+
+      // Renova o token com os dados atualizados (necessário após mudar username/email)
+      await loginService.refresh();
+      lerToken(); // atualiza o useAuth com o novo token imediatamente
+
       setSucesso("Perfil atualizado com sucesso!");
+
+      onSalvar?.(); // recarrega os dados da página
+
+      // Se o username mudou, redireciona para o novo perfil após 1.5s
+      // Se não mudou, fica na mesma página
+      if (username !== usernameOriginal) {
+        setTimeout(() => {
+          onClose();
+          router.push(`/perfil/${username}`);
+        }, 1500);
+      }
     } catch (err: any) {
       setErro(err?.response?.data?.message || "Erro ao atualizar perfil.");
     } finally {
@@ -92,7 +124,6 @@ export function EditProfileModal({ onClose }: Props) {
   }
 
   if (showDeleteModal) {
-    // ← adiciona
     return (
       <DeleteAccountModal
         onClose={onClose}
@@ -139,7 +170,7 @@ export function EditProfileModal({ onClose }: Props) {
           <SaveButton
             label="Deletar conta"
             variant="outline-red"
-            onClick={() => setShowDeleteModal(true)} // ← adiciona
+            onClick={() => setShowDeleteModal(true)}
           />
           <SaveButton
             label="Alterar senha"
@@ -149,6 +180,7 @@ export function EditProfileModal({ onClose }: Props) {
           <SaveButton
             label={loading ? "Salvando..." : "Salvar"}
             onClick={handleSalvar}
+            disabled={loading}
           />
         </div>
       </div>
