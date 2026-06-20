@@ -12,6 +12,9 @@ import IndicePagina from "@/app/components/ui/IndicePaginas";
 import EditaLoja from "@/app/components/modals/edita-loja";
 import CriaProduto from "@/app/components/modals/CriaProdutoModal";
 
+import { useAuth } from "@/app/hooks/useAuth";
+import CriaProduto from "@/app/components/modals/CriaProdutoModal";
+
 // Tipagem espelhada no JSON do Back-end
 interface AvaliacaoAPI {
   id: number;
@@ -43,6 +46,9 @@ interface LojaData {
 export default function LojaPage({ params }: { params: React.Usable<{ id: string }> }) {
   const { id } = React.use(params);
   const router = useRouter();
+
+const { usernameLogado, isLogado } = useAuth(); // ✅ Pegando info do user
+const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [dadosLoja, setDadosLoja] = useState<LojaData | null>(null);
   const [carregando, setCarregando] = useState<boolean>(true);
@@ -106,6 +112,9 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
     avatarUrl: av.usuario?.foto_perfil_url,
   })) || [];
 
+  // ✅ Lógica de verificação
+  const isOwner = isLogado && dadosLoja?.usuario?.username === usernameLogado;
+
   return (
     <main className="min-h-screen bg-[#F6F3E4] flex flex-col">
       {/* Navbar */}
@@ -117,11 +126,22 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         categoria={dadosLoja.categoria || "Geral"}
         nota={notaMedia}
         bannerUrl={dadosLoja.banner_url}
-        criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"}
+        criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"} 
         usernameCriador={dadosLoja.usuario?.username || ""}
-        onEditarLoja={() => setModalEditaLoja(true)}
-        onCriarProduto={() => setModalCriaProduto(true)}
+        isOwner={isOwner}
+        onAddProductClick={() => setIsModalOpen(true)}
       />
+
+      {/* ✅ Renderização do Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <CriaProduto 
+            lojaId={dadosLoja!.id} 
+            onClose={() => setIsModalOpen(false)} 
+            onSucesso={() => window.location.reload()} // Refresh simples pós-criação
+          />
+        </div>
+      )}
 
       {/* Carrossel de produtos melhores avaliados */}
       <div className="px-6 md:px-10 mt-12 mb-20">
@@ -174,7 +194,8 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         {/* Carrossel alinhado à esquerda */}
         <div className="w-full pl-6 md:pl-10">
           {avaliacoesMapeadas.length > 0 ? (
-            <CarrosselAvaliacao avaliacoes={avaliacoesMapeadas} />
+            <CarrosselAvaliacao avaliacoes={avaliacoesMapeadas}
+            onAvaliacaoClick={(avaliacao) => router.push(`/avaliacao-loja/${avaliacao.id}`)} />
           ) : (
             <p className="text-[#888] text-center text-sm w-full pr-6 md:pr-10">
               Esta loja ainda não possui avaliações.
