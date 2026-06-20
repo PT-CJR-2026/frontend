@@ -15,21 +15,25 @@ interface CarrosselAvaliacaoProps {
   titulo?: string;
   avaliacoes: Avaliacao[];
   acaoCabecalho?: React.ReactNode;
+  onAvaliacaoClick?: (avaliacao: Avaliacao) => void; // ← novo
 }
 
 export default function CarrosselAvaliacao({
   titulo,
   avaliacoes,
   acaoCabecalho,
+  onAvaliacaoClick, // ← novo
 }: CarrosselAvaliacaoProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragInfo = useRef({ startX: 0, scrollLeft: 0 });
+  const moveuDurante = useRef(false); // ← novo, evita clique acidental ao arrastar
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const container = scrollRef.current;
     if (!container) return;
     setIsDragging(true);
+    moveuDurante.current = false;
     dragInfo.current = {
       startX: e.clientX,
       scrollLeft: container.scrollLeft,
@@ -43,6 +47,7 @@ export default function CarrosselAvaliacao({
       const container = scrollRef.current;
       if (!container) return;
       const delta = e.clientX - dragInfo.current.startX;
+      if (Math.abs(delta) > 5) moveuDurante.current = true;
       container.scrollLeft = dragInfo.current.scrollLeft - delta;
     };
 
@@ -95,7 +100,14 @@ export default function CarrosselAvaliacao({
         ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         {avaliacoes.map((avaliacao) => (
-          <div key={avaliacao.id} className="shrink-0">
+          <div
+            key={avaliacao.id}
+            className="shrink-0"
+            onClick={() => {
+              if (moveuDurante.current) return; 
+              onAvaliacaoClick?.(avaliacao);
+            }}
+          >
             <CardAvaliacao
               nomeUsuario={avaliacao.nomeUsuario}
               comentario={avaliacao.comentario}

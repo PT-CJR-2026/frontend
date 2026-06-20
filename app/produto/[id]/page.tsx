@@ -6,6 +6,7 @@ import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import NotaEstrela from "../../components/ui/NotaEstrela";
 import GaleriaProduto from "../../components/ui/GaleriaProduto";
 import EditaProduto from "../../components/modals/EditaProdutoModal";
+import { CreateAvaliacaoModal } from "@/app/components/modals/Createavaliacaomodal";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -79,10 +80,12 @@ function SecaoAvaliacoes({
   titulo,
   estado,
   mensagemVazio,
+  onAvaliacaoClick, // ← novo
 }: {
   titulo: string;
   estado: EstadoAvaliacoes;
   mensagemVazio: string;
+  onAvaliacaoClick?: (avaliacao: Avaliacao) => void; // ← novo
 }) {
   if (estado.carregando) {
     return <p className="text-slate-500">Carregando avaliações...</p>;
@@ -93,7 +96,13 @@ function SecaoAvaliacoes({
   if (estado.dados.length === 0) {
     return <p className="text-slate-500">{mensagemVazio}</p>;
   }
-  return <CarrosselAvaliacao titulo={titulo} avaliacoes={estado.dados} />;
+  return (
+    <CarrosselAvaliacao
+      titulo={titulo}
+      avaliacoes={estado.dados}
+      onAvaliacaoClick={onAvaliacaoClick} // ← novo
+    />
+  );
 }
 
 function useProduto(produtoId: number) {
@@ -169,6 +178,7 @@ export default function ProdutoPage() {
 
   const { produto, carregando, erro } = useProduto(produtoId);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
+  const [modalCriarAvaliacao, setModalCriarAvaliacao] = useState(false);
   const [logado, setLogado] = useState(false);
 
   useEffect(() => {
@@ -216,7 +226,7 @@ export default function ProdutoPage() {
         {/* Galeria */}
         <GaleriaProduto nome={produto.nome} imagens={produto.imagem_produto ?? []} />
 
-        {/* Informações */}
+        {/* Botões */}
         <div className="flex-1 max-w-xl">
           <div className="flex items-start gap-2">
             <h1 className="text-3xl font-semibold text-[#111] m-0">
@@ -237,6 +247,7 @@ export default function ProdutoPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setModalCriarAvaliacao(true)}
                   aria-label="Favoritar produto"
                   className="w-7 h-7 rounded-full bg-[#FFC400] flex items-center justify-center text-white hover:bg-[#e0ac00] transition-colors"
                 >
@@ -297,11 +308,11 @@ export default function ProdutoPage() {
 
       {/* Avaliações */}
       <div className="px-6 md:px-10 mt-12 mb-12">
-        <h2 className="text-3xl font-semibold text-[#111] mb-4">Avaliações</h2>
         <SecaoAvaliacoes
-          titulo={`Avaliações do produto #${produtoId}`}
+          titulo={`Avaliações`}
           estado={avaliacoesProduto}
           mensagemVazio="Esse produto ainda não tem avaliações."
+          onAvaliacaoClick={(avaliacao) => router.push(`/avaliacao/${avaliacao.id}`)}
         />
       </div>
 
@@ -326,6 +337,16 @@ export default function ProdutoPage() {
           }}
         />
       )}
+
+      {/* Modal criar avaliação */}
+      {modalCriarAvaliacao &&(
+        <CreateAvaliacaoModal
+          produtoId={produto.id}
+          nomeProduto={produto.nome}
+          onClose={() => setModalCriarAvaliacao(false)}
+        />
+      )}
+
     </div>
   );
 }
