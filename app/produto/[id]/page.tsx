@@ -104,13 +104,11 @@ function useProduto(produtoId: number) {
   useEffect(() => {
     let ativo = true;
     setCarregando(true);
-    Promise.all([
-      produtoService.getById(produtoId),
-      produtoService.getImagens(produtoId).catch(() => []),
-    ])
-      .then(([dadosProduto, imagens]) => {
+    produtoService
+      .getById(produtoId)
+      .then((dadosProduto) => {
         if (!ativo) return;
-        setProduto({ ...dadosProduto, imagem_produto: imagens });
+        setProduto(dadosProduto);
         setErro(null);
       })
       .catch(() => {
@@ -171,6 +169,11 @@ export default function ProdutoPage() {
 
   const { produto, carregando, erro } = useProduto(produtoId);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
+  const [logado, setLogado] = useState(false);
+
+  useEffect(() => {
+    setLogado(!!localStorage.getItem("TOKEN_APLICACAO_FRONT"));
+  }, []);
 
   const avaliacoesProduto = useAvaliacoes(
     () => avaliacaoProdutoService.findByProduto(produtoId),
@@ -219,37 +222,41 @@ export default function ProdutoPage() {
             <h1 className="text-3xl font-semibold text-[#111] m-0">
               {produto.nome}
             </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <button
-                type="button"
-                onClick={() => setModalEdicaoAberto(true)}
-                aria-label="Editar produto"
-                className="w-7 h-7 rounded-full bg-[#6A38F3] flex items-center justify-center text-white hover:bg-[#5a2ee0] transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                aria-label="Favoritar produto"
-                className="w-7 h-7 rounded-full bg-[#FFC400] flex items-center justify-center text-white hover:bg-[#e0ac00] transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 7.1-1.01L12 2z" />
-                </svg>
-              </button>
-            </div>
+            {logado && (
+              <div className="flex items-center gap-2 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setModalEdicaoAberto(true)}
+                  aria-label="Editar produto"
+                  className="w-7 h-7 rounded-full bg-[#6A38F3] flex items-center justify-center text-white hover:bg-[#5a2ee0] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Favoritar produto"
+                  className="w-7 h-7 rounded-full bg-[#FFC400] flex items-center justify-center text-white hover:bg-[#e0ac00] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 7.1-1.01L12 2z" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Nota + mercado (é um mock) + estoque */}
+          {/* Nota + mercado + estoque */}
           <div className="flex items-center gap-2 mt-2 text-sm">
             <NotaEstrela nota={avaliacoesProduto.media} tamanho={16} />
             <span className="text-[#111] font-medium">
               {avaliacoesProduto.media.toFixed(1)} | {avaliacoesProduto.total} reviews
             </span>
-            <span className="text-[#6A38F3] font-medium ml-2">mercado</span>
+            <span className="text-[#6A38F3] font-medium ml-2">
+              {produto.loja?.nome ?? "mercado"}
+            </span>
             <span
               className={`ml-2 font-semibold ${
                 produto.estoque > 0 ? "text-[#19c257]" : "text-[#AF052A]"
