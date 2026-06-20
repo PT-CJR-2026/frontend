@@ -6,10 +6,11 @@ import Navbar from "@/app/components/layout/Navbar";
 import HeroLoja from "@/app/components/layout/HeroLoja";
 import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import { Produto } from "@/app/components/ui/CardProduto";
-
 import CarrosselAvaliacao from "@/app/components/ui/CarrosselAvaliacao";
 import NotaEstrela from "@/app/components/ui/NotaEstrela";
 import IndicePagina from "@/app/components/ui/IndicePaginas";
+import EditaLoja from "@/app/components/modals/edita-loja";
+import CriaProduto from "@/app/components/modals/CriaProdutoModal";
 
 // Tipagem espelhada no JSON do Back-end
 interface AvaliacaoAPI {
@@ -26,7 +27,10 @@ interface AvaliacaoAPI {
 interface LojaData {
   id: number;
   nome: string;
+  descricao: string | null;
   banner_url: string;
+  logo_url: string | null;
+  sticker_url: string | null;
   categoria: string | null;
   usuario: {
     nome: string | null;
@@ -44,9 +48,10 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
   const [carregando, setCarregando] = useState<boolean>(true);
   const [erro, setErro] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!id) return;
+  const [modalEditaLoja, setModalEditaLoja] = useState(false);
+  const [modalCriaProduto, setModalCriaProduto] = useState(false);
 
+  const carregarLoja = () => {
     fetch(`http://127.0.0.1:3001/lojas/${id}?t=${new Date().getTime()}`)
       .then((res) => {
         if (!res.ok) throw new Error("Recusado pelo servidor");
@@ -60,6 +65,11 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         setErro(true);
         setCarregando(false);
       });
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    carregarLoja();
   }, [id]);
 
   if (carregando) {
@@ -78,7 +88,6 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
     );
   }
 
-  // Cálculos de nota
   const totalNotas = dadosLoja.avaliacoes?.reduce((acc, av) => acc + av.nota, 0) || 0;
   const qtdAvaliacoes = dadosLoja.avaliacoes?.length || 0;
   const notaMedia = qtdAvaliacoes > 0 ? totalNotas / qtdAvaliacoes : 0;
@@ -89,7 +98,6 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
     router.push(`/produto/${produto.id}`);
   };
 
-  // Mapeamento das avaliações do Back-end
   const avaliacoesMapeadas = dadosLoja.avaliacoes?.map((av) => ({
     id: av.id,
     nomeUsuario: av.usuario?.username || "Usuário Anônimo",
@@ -104,13 +112,15 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
       <Navbar logoSrc="/logo-branca-stock.io.svg" logoAlt="Stock.IO" />
 
       {/* Hero */}
-      <HeroLoja 
+      <HeroLoja
         nomeLoja={dadosLoja.nome}
-        categoria={dadosLoja.categoria || "Geral"} 
-        nota={notaMedia} 
+        categoria={dadosLoja.categoria || "Geral"}
+        nota={notaMedia}
         bannerUrl={dadosLoja.banner_url}
-        criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"} 
-        usernameCriador={dadosLoja.usuario?.username || ""} 
+        criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"}
+        usernameCriador={dadosLoja.usuario?.username || ""}
+        onEditarLoja={() => setModalEditaLoja(true)}
+        onCriarProduto={() => setModalCriaProduto(true)}
       />
 
       {/* Carrossel de produtos melhores avaliados */}
@@ -138,7 +148,7 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
           {notaMedia > 0 ? notaMedia.toFixed(2) : "0.00"}
         </span>
 
-        {/* Estrelas com lógica fracionada */}
+        {/* Estrelas */}
         <div className="mb-16 flex items-center gap-[2px]">
           {[1, 2, 3, 4, 5].map((i) => {
             const preenchimento = Math.min(Math.max(notaMedia - (i - 1), 0), 1) * 100;
@@ -175,7 +185,7 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
 
       {/* Nova Sessão com o Grid Paginado */}
       <section className="px-6 md:px-10 mt-20 mb-20 w-full max-w-[1400px] mx-auto">
-        {/* Título Customizado igual ao Figma */}
+        {/* Título Customizado */}
         <div className="mb-10">
           <h2 className="text-[#111] leading-none flex items-baseline gap-2" style={{ fontFamily: "'League Spartan', sans-serif" }}>
             <span className="font-bold text-[36px] md:text-[44px]">Produtos</span>
@@ -184,15 +194,33 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         </div>
 
         {dadosLoja.produtos && dadosLoja.produtos.length > 0 ? (
-          <IndicePagina 
-            titulo="Produtos" 
-            produtos={dadosLoja.produtos} 
-            onProductClick={lidarComCliqueProduto} 
+          <IndicePagina
+            titulo="Produtos"
+            produtos={dadosLoja.produtos}
+            onProductClick={lidarComCliqueProduto}
           />
         ) : (
           <p className="text-[#888] text-sm">Esta loja ainda não possui produtos para exibir na galeria.</p>
         )}
       </section>
+
+      {/* Modal de edição da loja */}
+      {modalEditaLoja && (
+        <EditaLoja
+          loja={dadosLoja}
+          onClose={() => setModalEditaLoja(false)}
+          onSucesso={carregarLoja}
+        />
+      )}
+
+      {/* Modal de criação de produto */}
+      {modalCriaProduto && (
+        <CriaProduto
+          lojaId={dadosLoja.id}
+          onClose={() => setModalCriaProduto(false)}
+          onSucesso={carregarLoja}
+        />
+      )}
 
     </main>
   );
