@@ -127,7 +127,7 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         )}
       </div>
 
-      {/* Sessão de Review e Comentários do Figma */}
+      {/* Sessão de Review e Comentários */}
       <section className="w-full bg-black py-20 flex flex-col items-center overflow-hidden">
         <h2 className="text-white text-[32px] md:text-[50px] font-medium mb-4 text-center" style={{ fontFamily: "'League Spartan', sans-serif" }}>
           Reviews e Comentários
@@ -138,12 +138,30 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
           {notaMedia > 0 ? notaMedia.toFixed(2) : "0.00"}
         </span>
 
-        {/* Estrelas do componente oficial */}
-        <div className="mb-16">
-          <NotaEstrela nota={notaMedia} tamanho={40} />
+        {/* Estrelas com lógica fracionada */}
+        <div className="mb-16 flex items-center gap-[2px]">
+          {[1, 2, 3, 4, 5].map((i) => {
+            const preenchimento = Math.min(Math.max(notaMedia - (i - 1), 0), 1) * 100;
+            return (
+              <svg key={i} width="40" height="40" viewBox="0 0 24 24">
+                <defs>
+                  <linearGradient id={`grad${i}`}>
+                    <stop offset={`${preenchimento}%`} stopColor="#FFC400" />
+                    <stop offset={`${preenchimento}%`} stopColor="white" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 7.1-1.01L12 2z"
+                  fill={`url(#grad${i})`}
+                  stroke="#FFC400"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            );
+          })}
         </div>
 
-        {/* Carrossel alinhado à esquerda como pede o design */}
+        {/* Carrossel alinhado à esquerda */}
         <div className="w-full pl-6 md:pl-10">
           {avaliacoesMapeadas.length > 0 ? (
             <CarrosselAvaliacao avaliacoes={avaliacoesMapeadas} />
