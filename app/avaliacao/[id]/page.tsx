@@ -5,6 +5,7 @@ import { ApiService, axiosInstance } from "@/app/services/BaseService";
 import Navbar from "@/app/components/layout/Navbar";
 import { useAuth } from "@/app/hooks/useAuth";
 import { EditCommentModal } from "@/app/components/modals/EditCommentModal";
+import { EditAvaliacaoModal } from "@/app/components/modals/Editavaliacaomodal";
 
 new ApiService("/comentario-avaliacao");
 
@@ -12,6 +13,7 @@ type Avaliacao = {
   id: string;
   nota: number;
   comentario?: string;
+  produto_id?: number;
   produtoId?: string;
   created_at?: string;
   usuario: {
@@ -41,6 +43,7 @@ export default function AvaliacaoPage() {
   const { isLogado, idLogado } = useAuth();
 
   const [avaliacao, setAvaliacao] = useState<Avaliacao | null>(null);
+  const [nomeProduto, setNomeProduto] = useState<string>("Produto");
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [novoComentario, setNovoComentario] = useState("");
   const [erro, setErro] = useState(false);
@@ -88,15 +91,6 @@ export default function AvaliacaoPage() {
     }
   };
 
-  const deletarAvaliacao = async () => {
-    try {
-      await axiosInstance.delete(`/avaliacao-produto/${avaliacao?.id}`);
-      router.back();
-    } catch (err) {
-      console.error("Erro ao deletar avaliação:", err);
-    }
-  };
-
   const deletarComentario = async (comentarioId: number) => {
     try {
       await axiosInstance.delete(`/comentario-avaliacao/${comentarioId}`);
@@ -111,6 +105,17 @@ export default function AvaliacaoPage() {
       try {
         const avaliacaoResponse = await axiosInstance.get(`/avaliacao-produto/${id}`);
         setAvaliacao(avaliacaoResponse.data);
+
+        // Busca o nome do produto separadamente, já que a avaliação só traz produto_id
+        const produtoId = avaliacaoResponse.data.produto_id;
+        if (produtoId) {
+          try {
+            const produtoResponse = await axiosInstance.get(`/produto/${produtoId}`);
+            setNomeProduto(produtoResponse.data.nome ?? "Produto");
+          } catch (err) {
+            console.log("Erro ao carregar nome do produto:", err);
+          }
+        }
       } catch (err: any) {
         console.log(err.response);
         setErro(true);
@@ -169,31 +174,17 @@ export default function AvaliacaoPage() {
             ))}
           </div>
 
-          {/* Ações — só para o dono da avaliação */}
+          {/* Lápis — editar avaliação — só para o dono */}
           {ehDonoDaAvaliacao && (
-            <>
-              {/* Lápis — editar avaliação */}
-              <button
-                onClick={() => setModalAvaliacaoAberto(true)}
-                className="ml-2 text-white/60 hover:text-white transition"
-                aria-label="Editar avaliação"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-
-              {/* Lixeira — deletar avaliação */}
-              <button
-                onClick={deletarAvaliacao}
-                className="ml-1 text-white/60 hover:text-red-500 transition"
-                aria-label="Excluir avaliação"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </>
+            <button
+              onClick={() => setModalAvaliacaoAberto(true)}
+              className="ml-2 text-white/60 hover:text-white transition"
+              aria-label="Editar avaliação"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
           )}
         </div>
 
@@ -285,14 +276,19 @@ export default function AvaliacaoPage() {
         )}
       </div>
 
-      {/* Modal editar avaliação */}
+      {/* Modal editar/deletar avaliação — agora com estrelas clicáveis */}
       {modalAvaliacaoAberto && (
-        <EditCommentModal
-          avaliacaoProdutoId={avaliacao.id}
+        <EditAvaliacaoModal
+          avaliacaoId={Number(avaliacao.id)}
+          nomeProduto={nomeProduto}
+          notaAtual={avaliacao.nota}
           comentarioAtual={avaliacao.comentario}
           onClose={() => setModalAvaliacaoAberto(false)}
-          onSalvo={(novoTexto) => {
-            setAvaliacao({ ...avaliacao, comentario: novoTexto });
+          onSalvo={(dados) => {
+            setAvaliacao({ ...avaliacao, nota: dados.nota, comentario: dados.comentario });
+          }}
+          onDeletado={() => {
+            router.back();
           }}
         />
       )}
