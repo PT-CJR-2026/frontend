@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+"use client";
+
+import React from "react";
 import Button from "@/app/components/ui/Button";
 import LinkText from "@/app/components/ui/LinkText";
 import Link from "next/link";
+import { useAuth } from "@/app/hooks/useAuth";
 
 interface NavbarProps {
   logoSrc?: string;
   logoAlt?: string;
 }
- 
+
 const Navbar: React.FC<NavbarProps> = ({
   logoSrc,
   logoAlt = "Logo",
 }) => {
-  //Mock para testar a navbarlogada e deslogada
-  const loading = false;
-  const [usuario, setUsuario] = useState(true);
-
-  const logout = () => {
-    setUsuario(false);
-  };
+  const { isLogado, usernameLogado, carregando, logout } = useAuth();
 
   return (
     <nav
@@ -26,17 +23,17 @@ const Navbar: React.FC<NavbarProps> = ({
       style={{ height: 92 }}
     >
       <div className="h-full max-w-7x1 mx-auto flex items-center justify-between">
- 
+
         {/* Logo */}
         <div className="flex items-center">
           {logoSrc ? (
-              <Link href={"/"}>
-                <img
+            <Link href={"/"}>
+              <img
                 src={logoSrc}
                 alt={logoAlt}
                 className="h-9 w-auto object-contain"
-                />
-              </Link>
+              />
+            </Link>
           ) : (
             <div className="h-9 w-36 rounded-md border border-dashed border-white/20 flex items-center justify-center">
               <span className="text-xs text-white/30 select-none tracking-widest uppercase">
@@ -45,29 +42,25 @@ const Navbar: React.FC<NavbarProps> = ({
             </div>
           )}
         </div>
-        
-        
-        {!loading &&(
+
+        {/* Aguarda leitura do localStorage antes de renderizar */}
+        {!carregando && (
           <>
-            {usuario ? (
+            {isLogado ? (
               <div className="flex items-center gap-10">
-                {/* Ações com login */}
-                {/* Após concluir as entregas melhorar a responsividade */}
-                {/* Perfil do usuário */}
-                <Link href={"/login"}>
+                {/* Ícone de perfil → vai para o perfil do usuário logado */}
+                <Link href={usernameLogado ? `/perfil/${usernameLogado}` : "/perfil"}>
                   <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 35 35"
-                  className="h-9 w-auto text-[#FFFFFF] hover:text-[#6A38F3] cursor-pointer"
-                  fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 35 35"
+                    className="h-9 w-auto text-[#FFFFFF] hover:text-[#6A38F3] cursor-pointer"
+                    fill="currentColor"
                   >
                     <path d="M22.7395 4.41465C21.4092 2.97842 19.5512 2.1875 17.5004 2.1875C15.4387 2.1875 13.5745 2.97363 12.2504 4.40098C10.9119 5.84404 10.2598 7.80527 10.4129 9.92305C10.7164 14.1012 13.8958 17.5 17.5004 17.5C21.105 17.5 24.2789 14.1019 24.5872 9.92441C24.7424 7.82578 24.0861 5.86865 22.7395 4.41465ZM29.5316 32.8125H5.46914C5.15419 32.8166 4.84228 32.7504 4.55611 32.6188C4.26994 32.4872 4.01671 32.2935 3.81484 32.0517C3.37051 31.5205 3.19141 30.7952 3.32402 30.0617C3.90098 26.8611 5.70156 24.1726 8.53164 22.2852C11.0459 20.6097 14.2308 19.6875 17.5004 19.6875C20.77 19.6875 23.9549 20.6104 26.4691 22.2852C29.2992 24.1719 31.0998 26.8604 31.6768 30.061C31.8094 30.7945 31.6303 31.5198 31.1859 32.051C30.9841 32.2929 30.7309 32.4868 30.4448 32.6185C30.1586 32.7502 29.8467 32.8165 29.5316 32.8125Z"/>
                   </svg>
                 </Link>
 
-                {/* Deslogar - Sair */}
-                {/* Tá mockado */}
-                {/* Button e button ficou bem ruim, achei que o react tava quebrado */}
+                {/* Botão de logout */}
                 <button onClick={logout}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -81,35 +74,31 @@ const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : (
               <div className="flex items-center gap-10">
-
-                {/* Ações sem login */}
-                {/* Após concluir as entregas melhorar a responsividade */}
                 {/* Login */}
                 <Link href="/login">
                   <LinkText
-                      className="
+                    className="
                       text-white text-sm font-semibold tracking-widest uppercase
                       hover:text-[#6A38F3]
-                      "
-
+                    "
                   >
-                      Login
+                    Login
                   </LinkText>
                 </Link>
-      
+
                 {/* Cadastrar */}
                 <Link href={"/cadastro"}>
                   <Button
-                      variant="primary"
-                      className="
-                          !w-auto !py-2 px-6
-                          !text-sm !font-bold tracking-widest uppercase
-                          hover:!bg-white
-                          hover:!text-[#6A38F3]
-                          transition-colors
-                      "
+                    variant="primary"
+                    className="
+                      !w-auto !py-2 px-6
+                      !text-sm !font-bold tracking-widest uppercase
+                      hover:!bg-white
+                      hover:!text-[#6A38F3]
+                      transition-colors
+                    "
                   >
-                      Cadastre-se
+                    Cadastre-se
                   </Button>
                 </Link>
               </div>
@@ -121,5 +110,5 @@ const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
- 
+
 export default Navbar;
