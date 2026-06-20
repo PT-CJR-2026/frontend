@@ -6,32 +6,25 @@ export class ProdutoService extends ApiService {
     super("/produto");
   }
 
-  // Por enquanto os três carrosséis usam o mesmo endpoint
-  // Quando o backend tiver ordenação, ajustar aqui
   async getMelhoresAvaliados(): Promise<Produto[]> {
-    const response = await axiosInstance.get(this.url);
+    const response = await axiosInstance.get(`${this.url}/melhores-avaliados`);
     return response.data;
   }
 
   async getMaisBaratos(): Promise<Produto[]> {
-    const response = await axiosInstance.get(this.url);
+    const response = await axiosInstance.get(`${this.url}/mais-baratos`);
     return response.data;
   }
 
   async getRecemAdicionados(): Promise<Produto[]> {
-    const response = await axiosInstance.get(this.url);
+    const response = await axiosInstance.get(`${this.url}/recem-adicionados`);
     return response.data;
   }
 
   async getPorCategoria(categoriaId: number): Promise<Produto[]> {
-    const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
-    return response.data;
-  }
-
-  // Busca um único produto pelo id (usado na página de detalhes do produto).
-  // O backend já inclui imagem_produto e loja nessa resposta (rota pública).
-  async getById(id: number): Promise<Produto> {
-    const response = await axiosInstance.get(`${this.url}/${id}`);
+    const response = await axiosInstance.get(
+      `${this.url}/categoria/${categoriaId}`
+    );
     return response.data;
   }
 }
