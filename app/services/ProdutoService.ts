@@ -27,4 +27,9 @@ export class ProdutoService extends ApiService {
     );
     return response.data;
   }
+
+  async getById(produtoId: number): Promise<Produto> {
+    const response = await axiosInstance.get(`${this.url}/${produtoId}`);
+    return response.data;
+  }
 }
