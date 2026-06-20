@@ -253,22 +253,22 @@ export default function PerfilPage() {
             )}
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {usuario.lojas.map((loja) => (
-                <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 shadow-sm shrink-0 w-[400px]">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[26px] font-bold text-[#111] leading-tight">{loja.nome}</span>
-                    <span className="text-[15px] text-[#6A38F3] font-medium">{loja.descricao ?? ""}</span>
-                  </div>
-                  <div className="w-20 h-20 rounded-full overflow-hidden bg-[#f5f0ff] shrink-0 flex items-center justify-center">
-                    {loja.logo_url ? (
-                      <img src={loja.logo_url} alt={loja.nome} className="w-full h-full object-contain p-2" />
-                    ) : (
-                      <span className="text-[#6A38F3] text-xs font-bold text-center px-1">{loja.nome}</span>
-                    )}
-                  </div>
+            {usuario.lojas.map((loja) => (
+              <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 shadow-sm shrink-0 w-[400px]">
+                <div className="flex flex-col gap-2">
+                  <span className="text-[26px] font-bold text-[#111] leading-tight">{loja.nome}</span>
+                  <span className="text-[15px] text-[#6A38F3] font-medium">{loja.descricao ?? ""}</span>
                 </div>
-              ))}
-            </div>
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-[#f5f0ff] shrink-0 flex items-center justify-center">
+                  {loja.logo_url ? (
+                    <img src={loja.logo_url} alt={loja.nome} className="w-full h-full object-contain p-2" />
+                  ) : (
+                    <span className="text-[#6A38F3] text-xs font-bold text-center px-1">{loja.nome}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* ── Avaliações ── */}
@@ -301,9 +301,13 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
-                    <a href={`#avaliacao-loja-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
+                    {/* ✅ Redireciona para a avaliação de loja específica */}
+                    <Link
+                      href={`/avaliacao-loja/${av.id}`}
+                      className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline"
+                    >
                       ver mais
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -332,9 +336,13 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
-                    <a href={`#avaliacao-produto-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
+                    {/* ✅ Redireciona para a avaliação de produto específica */}
+                    <Link
+                      href={`/avaliacao/${av.id}`}
+                      className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline"
+                    >
                       ver mais
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))}

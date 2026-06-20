@@ -17,17 +17,35 @@ export default function CriaLoja({ onClose, onSucesso }: CriaLojaProps) {
     initialValues: dadosVaziosLoja,
     validationSchema: lojaSchema,
     onSubmit: async (values, { setSubmitting, setStatus }) => {
+      let lojaId: number | null = null;
+
       try {
+        // 1. Cria a loja
         const loja = await ModalService.criarLoja({
           nome: values.nome,
           descricao: values.descricao,
         });
+        lojaId = loja.id;
 
-        await ModalService.salvarImagensLoja(loja.id, imagens);
+        // 2. Faz upload das imagens (se tiver alguma)
+        const temImagens = imagens.logo || imagens.banner || imagens.sticker;
+        if (temImagens) {
+          await ModalService.salvarImagensLoja(loja.id, imagens);
+        }
 
+        // 3. Tudo certo — fecha e atualiza
         onSucesso?.();
         onClose();
       } catch (err: unknown) {
+        // Se a loja foi criada mas o upload falhou, deleta a loja
+        if (lojaId !== null) {
+          try {
+            await ModalService.deletarLoja(lojaId);
+          } catch (deleteErr) {
+            console.error("Erro ao reverter criação da loja:", deleteErr);
+          }
+        }
+
         const msg = err instanceof Error ? err.message : "Erro ao criar loja.";
         setStatus(msg);
       } finally {
