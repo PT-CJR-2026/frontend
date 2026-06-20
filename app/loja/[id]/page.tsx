@@ -11,6 +11,7 @@ import NotaEstrela from "@/app/components/ui/NotaEstrela";
 import IndicePagina from "@/app/components/ui/IndicePaginas";
 import EditaLoja from "@/app/components/modals/edita-loja";
 import CriaProduto from "@/app/components/modals/CriaProdutoModal";
+
 import { useAuth } from "@/app/hooks/useAuth";
 
 // Tipagem espelhada no JSON do Back-end

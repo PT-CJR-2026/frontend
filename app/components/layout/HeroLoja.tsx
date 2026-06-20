@@ -9,6 +9,8 @@ interface HeroLojaProps {
   bannerUrl: string;
   criador: string;
   usernameCriador: string;
+  onEditarLoja?: () => void;
+  onCriarProduto?: () => void;
   isOwner?: boolean;
   onAddProductClick?: () => void;
   onEditarLoja?: () => void;
@@ -21,6 +23,9 @@ export default function HeroLoja({
   nota,
   bannerUrl,
   criador,
+  usernameCriador,
+  onEditarLoja,
+  onCriarProduto,
   usernameCriador, 
   isOwner,
   onAddProductClick,
