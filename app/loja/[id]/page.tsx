@@ -111,7 +111,6 @@ const [isModalOpen, setIsModalOpen] = useState(false);
     avatarUrl: av.usuario?.foto_perfil_url,
   })) || [];
 
-  // ✅ Lógica de verificação
   const isOwner = isLogado && dadosLoja?.usuario?.username === usernameLogado;
 
   return (
@@ -128,7 +127,6 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"} 
         usernameCriador={dadosLoja.usuario?.username || ""}
         isOwner={isOwner}
-        onAddProductClick={() => setIsModalOpen(true)}
         onEditarLoja={() => setModalEditaLoja(true)}
         onCriarProduto={() => setModalCriaProduto(true)}
       />
