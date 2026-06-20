@@ -11,6 +11,9 @@ import CarrosselAvaliacao from "@/app/components/ui/CarrosselAvaliacao";
 import NotaEstrela from "@/app/components/ui/NotaEstrela";
 import IndicePagina from "@/app/components/ui/IndicePaginas";
 
+import { useAuth } from "@/app/hooks/useAuth";
+import CriaProduto from "@/app/components/modals/CriaProdutoModal";
+
 // Tipagem espelhada no JSON do Back-end
 interface AvaliacaoAPI {
   id: number;
@@ -39,6 +42,9 @@ interface LojaData {
 export default function LojaPage({ params }: { params: React.Usable<{ id: string }> }) {
   const { id } = React.use(params);
   const router = useRouter();
+
+const { usernameLogado, isLogado } = useAuth(); // ✅ Pegando info do user
+const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [dadosLoja, setDadosLoja] = useState<LojaData | null>(null);
   const [carregando, setCarregando] = useState<boolean>(true);
@@ -98,6 +104,9 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
     avatarUrl: av.usuario?.foto_perfil_url,
   })) || [];
 
+  // ✅ Lógica de verificação
+  const isOwner = isLogado && dadosLoja?.usuario?.username === usernameLogado;
+
   return (
     <main className="min-h-screen bg-[#F6F3E4] flex flex-col">
       {/* Navbar */}
@@ -110,8 +119,21 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
         nota={notaMedia} 
         bannerUrl={dadosLoja.banner_url}
         criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"} 
-        usernameCriador={dadosLoja.usuario?.username || ""} 
+        usernameCriador={dadosLoja.usuario?.username || ""}
+        isOwner={isOwner}
+        onAddProductClick={() => setIsModalOpen(true)}
       />
+
+      {/* ✅ Renderização do Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <CriaProduto 
+            lojaId={dadosLoja!.id} 
+            onClose={() => setIsModalOpen(false)} 
+            onSucesso={() => window.location.reload()} // Refresh simples pós-criação
+          />
+        </div>
+      )}
 
       {/* Carrossel de produtos melhores avaliados */}
       <div className="px-6 md:px-10 mt-12 mb-20">
