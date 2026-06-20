@@ -61,14 +61,18 @@ const renderStars = (notaBase: number) => {
     <section className="w-full relative aspect-[1440/539] flex flex-col items-center justify-center overflow-hidden">
       
       <div className="absolute inset-0 z-0">
-        <Image
-          src={bannerUrl}
-          alt={`Banner da loja ${nomeLoja}`}
-          fill
-          className="object-cover object-center"
-          priority
-        />
-      </div>
+              {bannerUrl ? (
+                <Image
+                  src={bannerUrl}
+                  alt={`Banner da loja ${nomeLoja}`}
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-[#1A1A1A]" />
+              )}
+            </div>
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/50 to-transparent z-0"></div>
 
