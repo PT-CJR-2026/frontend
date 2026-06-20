@@ -1,27 +1,29 @@
-"use client";
-
 import Navbar from "@/app/components/layout/Navbar";
 import HeroLoja from "@/app/components/layout/HeroLoja";
+
+// ✅ 1. Força o Next.js a nunca gerar essa página de forma estática no build
+export const dynamic = "force-dynamic"; 
 
 interface LojaData {
   id: number;
   nome: string;
   banner_url: string;
+  categoria: string | null; 
   usuario: {
-    nome: string; // ✅ Agora pronto para receber o nome real do Back-end
+    nome?: string; 
+    username: string;
   };
   avaliacoes: {
     nota: number;
-  }[];
-  produtos: {
-    categoria_id: number;
   }[];
 }
 
 export default async function TesteHeroLojaPage() {
   const slugOuIdDaLoja = "6"; 
 
-  const resLoja = await fetch(`http://127.0.0.1:3001/lojas/${slugOuIdDaLoja}`, {
+  // ✅ 2. Adicionamos um timestamp na URL para enganar o cache do Next.js
+  // O Next vai achar que é uma URL inédita e será OBRIGADO a ir no Back-end buscar o JSON novo
+  const resLoja = await fetch(`http://127.0.0.1:3001/lojas/${slugOuIdDaLoja}?t=${new Date().getTime()}`, {
     cache: "no-store",
   });
 
@@ -29,26 +31,9 @@ export default async function TesteHeroLojaPage() {
 
   const dadosLoja: LojaData = await resLoja.json();
 
-  // Forçando o 4.75 apenas para você visualizar o corte perfeito da estrela.
-  // Depois de testar, volte para a lógica da const notaMedia real!
-  const notaMedia = 4.75; 
-
-  let categoriaReal = "geral";
-  const primeiroProduto = dadosLoja.produtos?.[0];
-
-  if (primeiroProduto?.categoria_id) {
-    try {
-      const resCategoria = await fetch(`http://127.0.0.1:3001/categorias/${primeiroProduto.categoria_id}`, {
-        cache: "no-store",
-      });
-      if (resCategoria.ok) {
-        const dadosCategoria = await resCategoria.json();
-        categoriaReal = dadosCategoria.nome;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const totalNotas = dadosLoja.avaliacoes?.reduce((acc, av) => acc + av.nota, 0) || 0;
+  const qtdAvaliacoes = dadosLoja.avaliacoes?.length || 0;
+  const notaMedia = qtdAvaliacoes > 0 ? totalNotas / qtdAvaliacoes : 0;
 
   return (
     <main className="min-h-screen bg-[#F8F8F4] flex flex-col">
@@ -56,10 +41,11 @@ export default async function TesteHeroLojaPage() {
 
       <HeroLoja 
         nomeLoja={dadosLoja.nome}
-        categoria={categoriaReal}
+        categoria={dadosLoja.categoria || "Geral"} 
         nota={notaMedia} 
         bannerUrl={dadosLoja.banner_url}
-        criador={dadosLoja.usuario?.nome || "Desconhecido"} // ✅ Passando o nome real
+        criador={dadosLoja.usuario?.nome || dadosLoja.usuario?.username || "Desconhecido"}
+        usernameCriador={dadosLoja.usuario?.username || ""}
       />
 
       <div className="h-[500px] flex items-center justify-center">
