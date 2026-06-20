@@ -22,7 +22,8 @@ export function CardLoja({ loja, onClick }: CardLojaProps) {
       <div className="w-32 h-32 rounded-full overflow-hidden mb-3 shadow-sm group-hover:shadow-md transition-shadow bg-white flex items-center justify-center">
         <img 
           src={loja.logoUrl} 
-          alt={`Logo da loja ${loja.nome}`} 
+          alt={`Logo da loja ${loja.nome}`}
+          draggable={false}
           className="w-full h-full object-cover" 
         />
       </div>
