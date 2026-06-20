@@ -66,7 +66,7 @@ export default function LojaPage({ params }: { params: React.Usable<{ id: string
   if (carregando) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F3E4]">
-        <p className="text-xl font-semibold text-gray-500">A carregar a loja...</p>
+        <p className="text-xl font-semibold text-gray-500">Carregando a loja...</p>
       </div>
     );
   }
