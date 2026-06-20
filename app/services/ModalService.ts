@@ -135,6 +135,14 @@ async function criarLoja(dto: CriarLojaDto): Promise<{ id: number }> {
   return data;
 }
 
+async function deletarLoja(lojaId: number): Promise<void> {
+  await axiosInstance.delete(`/lojas/${lojaId}`);
+}
+
+async function atualizarLoja(lojaId: number, dto: { nome?: string; descricao?: string }): Promise<void> {
+  await axiosInstance.patch(`/lojas/${lojaId}`, dto);
+}
+
 async function salvarImagensLoja(lojaId: number, imagens: ImagensLoja): Promise<void> {
   const uploads: Promise<void>[] = [];
 
@@ -174,5 +182,7 @@ export const ModalService = {
   salvarImagensProduto,
   atualizarImagensProduto,
   criarLoja,
+  deletarLoja,
+  atualizarLoja,
   salvarImagensLoja,
 };
