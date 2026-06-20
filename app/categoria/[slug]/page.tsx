@@ -13,6 +13,8 @@ import { axiosInstance } from "@/app/services/BaseService";
 import CarrosselLoja from "@/app/components/ui/CarrosselLoja";
 import { Loja } from "@/app/components/ui/CardLoja";
 import { FiltroCategorias } from "@/app/components/ui/FiltroCategorias";
+import { LojasService } from "@/app/services/LojasService";
+
 
 const produtoService = new ProdutoService();
 
@@ -28,6 +30,7 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
   const [nomeCategoria, setNomeCategoria] = useState(slug);
   const [lojas, setLojas] = useState<Loja[]>([]);
   const [ordenacao, setOrdenacao] = useState<string>('padrao');
+  const lojasService = new LojasService();
   const [subcategorias, setSubcategorias] = useState<string[]>([]);
   const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState<string | null>(null);
   const [subcategoriasMap, setSubcategoriasMap] = useState<{ id: number; nome: string }[]>([]);
@@ -76,8 +79,9 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
           );
 
           // Lojas
-          const { data: lojasData } = await axiosInstance.get(`/lojas/categoria/${categoria.id}`);
+          const lojasData = await lojasService.getLojasPorCategoria(categoria.id);
           setLojas(lojasData);
+          
 
         } else {
           const todos = await produtoService.getMelhoresAvaliados();
