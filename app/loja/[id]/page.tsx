@@ -7,7 +7,6 @@ import HeroLoja from "@/app/components/layout/HeroLoja";
 import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import { Produto } from "@/app/components/ui/CardProduto";
 
-// Importações dos componentes da equipa
 import CarrosselAvaliacao from "@/app/components/ui/CarrosselAvaliacao";
 import NotaEstrela from "@/app/components/ui/NotaEstrela";
 import IndicePagina from "@/app/components/ui/IndicePaginas";
