@@ -115,28 +115,28 @@ export default function CategoriaPage({ params }: { params: Promise<{ slug: stri
   }
 
   function handleOrdenacao(id: string) {
-  const novaOrdenacao = ordenacao === id ? 'padrao' : id;
-  setOrdenacao(novaOrdenacao);
+    const novaOrdenacao = ordenacao === id ? 'padrao' : id;
+    setOrdenacao(novaOrdenacao);
 
-  const baseFiltrada = subcategoriaSelecionada
-    ? produtos.filter(p => {
-        const sub = subcategoriasMap.find(s => s.nome === subcategoriaSelecionada);
-        return sub && p.categoria_id === sub.id;
-      })
-    : produtos;
+    const baseFiltrada = subcategoriaSelecionada
+      ? produtos.filter(p => {
+          const sub = subcategoriasMap.find(s => s.nome === subcategoriaSelecionada);
+          return sub && p.categoria_id === sub.id;
+        })
+      : produtos;
 
-  if (novaOrdenacao === 'preco') {
-    setProdutosExibidos([...baseFiltrada].sort((a, b) =>
-      parseFloat(String(a.preco)) - parseFloat(String(b.preco))
-    ));
-  } else if (novaOrdenacao === 'recente') {
-    setProdutosExibidos([...baseFiltrada].sort((a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ));
-  } else {
-    setProdutosExibidos(baseFiltrada);
+    if (novaOrdenacao === 'preco') {
+      setProdutosExibidos([...baseFiltrada].sort((a, b) =>
+        parseFloat(String(a.preco)) - parseFloat(String(b.preco))
+      ));
+    } else if (novaOrdenacao === 'recente') {
+      setProdutosExibidos([...baseFiltrada].sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ));
+    } else {
+      setProdutosExibidos(baseFiltrada);
+    }
   }
-}
 
   return (
     <div className="min-h-screen bg-[#F6F3E4]">
