@@ -89,7 +89,7 @@ export default function HomePage() {
 
   function handleLojaClick(loja: Loja) {
     console.log(`Página da loja ${loja.nome} em desenvolvimento.`);
-    // Futuramente: router.push(`/loja/${loja.id}`);
+    router.push(`/loja/${loja.id}`);
   }
 
   function handleCategoriaClick(categoria: Categoria) {

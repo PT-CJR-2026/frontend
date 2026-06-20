@@ -23,10 +23,7 @@ export default function HeroLoja({
   usernameCriador,
   onEditarLoja,
   onCriarProduto,
-  usernameCriador, 
   isOwner,
-  onEditarLoja,
-  onCriarProduto,
 }: HeroLojaProps) {
 
   const renderStars = (notaBase: number) => {
