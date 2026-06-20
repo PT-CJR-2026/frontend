@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import CarrosselCardProdutos from "@/app/components/ui/Carrossel";
+import CarrosselCardProdutos from "@/app/components/ui/CarrosselProduto";
 import SearchBar from "@/app/components/ui/SearchBar";
 import Navbar from "@/app/components/layout/Navbar";
 import Hero from "@/app/components/layout/Hero";

@@ -1,10 +1,10 @@
 "use client";
 
 import { X, ChevronDown } from "lucide-react";
-import ImagemInput from "../components/ui/ImageInput";
+import ImagemInput from "../ui/ImageInput";
 import { useState } from "react";
 import { FormikProps } from "formik";
-import { DadosProduto } from "../components/schema/produto-schema";
+import { DadosProduto } from "../schema/produto-schema";
 import CurrencyInput from "react-currency-input-field";
 
 export interface ImagensProduto {

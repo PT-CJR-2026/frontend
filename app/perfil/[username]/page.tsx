@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import Navbar from "@/app/components/layout/Navbar";
 import { useAuth } from "@/app/hooks/useAuth";
 import { EditProfileModal } from "@/app/components/modals/EditProfileModal";
+import CriaLoja from "@/app/components/modals/criar-loja";
 import CardProduto, { Produto } from "@/app/components/ui/CardProduto";
 import { CardLoja } from "@/app/components/ui/CardLoja";
 
@@ -99,6 +100,7 @@ export default function PerfilPage() {
 
   const [usuario, setUsuario] = useState<PerfilUsuario | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [modalLojaAberto, setModalLojaAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
 
@@ -120,8 +122,6 @@ export default function PerfilPage() {
     carregarPerfil(username);
   }, [username]);
 
-  // Todos os produtos de todas as lojas do usuário num único array
-  // com referência à loja para o CardProduto mostrar o logo
   const todosProdutos: Produto[] = usuario?.lojas.flatMap((loja) =>
     loja.produtos.map((p) => ({
       ...p,
@@ -182,7 +182,7 @@ export default function PerfilPage() {
       {/* Seção do perfil */}
       <div>
 
-        {/* Avatar sobrepondo o banner — 180px da borda esquerda */}
+        {/* Avatar */}
         <div className="-mt-[115px] mb-1 ml-[180px]">
           <div className="w-[230px] h-[230px] rounded-full overflow-hidden border-4 border-[#F6F3E4] shadow-lg bg-[#e8e8e8]">
             <img
@@ -193,7 +193,7 @@ export default function PerfilPage() {
           </div>
         </div>
 
-        {/* Info + botão editar — alinhados com o avatar */}
+        {/* Info + botão editar */}
         <div className="flex items-start justify-between mb-6 ml-[180px] pr-10">
           <div className="flex flex-col" style={{ gap: "6px" }}>
             <h1 style={{ width: "318px" }} className="text-[22px] font-bold text-[#111] leading-none m-0 p-0">{usuario.nome}</h1>
@@ -214,7 +214,7 @@ export default function PerfilPage() {
           )}
         </div>
 
-        {/* ── Produtos (todos os produtos de todas as lojas) ── */}
+        {/* ── Produtos ── */}
         {todosProdutos.length > 0 && (
           <section className="mb-8 px-[180px]">
             <div className="flex items-center justify-between mb-4">
@@ -239,20 +239,20 @@ export default function PerfilPage() {
         )}
 
         {/* ── Lojas ── */}
-        {usuario.lojas.length > 0 && (
-          <section className="mb-8 px-[180px]">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[18px] font-semibold text-[#111]">Lojas</h2>
-              {isProprietario && (
-                <button
-                  onClick={() => alert("TODO: adicionar loja")}
-                  className="w-8 h-8 rounded-full bg-[#6A38F3] text-white flex items-center justify-center hover:bg-[#5a2de0] transition-colors text-lg leading-none"
-                >
-                  +
-                </button>
-              )}
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+        <section className="mb-8 px-[180px]">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[18px] font-semibold text-[#111]">Lojas</h2>
+            {isProprietario && (
+              <button
+                onClick={() => setModalLojaAberto(true)}
+                className="flex items-center justify-center hover:opacity-70 transition-opacity"
+                aria-label="Adicionar loja"
+              >
+                <Image src="/Icone-Mais.svg" alt="Adicionar loja" width={32} height={32} />
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {usuario.lojas.map((loja) => (
                 <div key={loja.id} className="flex items-center justify-between bg-white rounded-2xl px-8 py-6 shadow-sm shrink-0 w-[400px]">
                   <div className="flex flex-col gap-2">
@@ -269,8 +269,7 @@ export default function PerfilPage() {
                 </div>
               ))}
             </div>
-          </section>
-        )}
+        </section>
 
         {/* ── Avaliações ── */}
         {(usuario.avaliacao_loja?.length > 0 || usuario.avaliacao_produto?.length > 0) && (
@@ -278,7 +277,6 @@ export default function PerfilPage() {
             <h2 className="text-[18px] font-semibold text-[#111] mb-4">Avaliações</h2>
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
 
-              {/* Avaliações de loja */}
               {usuario.avaliacao_loja?.map((av) => (
                 <div key={`loja-${av.id}`} className="bg-white rounded-2xl p-5 flex gap-4 shadow-sm">
                   <div className="w-12 h-12 rounded-full bg-[#f0eef9] shrink-0 overflow-hidden flex items-center justify-center">
@@ -303,7 +301,6 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
-                    {/* TODO: substituir href pela rota real da avaliação de loja */}
                     <a href={`#avaliacao-loja-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
                       ver mais
                     </a>
@@ -311,7 +308,6 @@ export default function PerfilPage() {
                 </div>
               ))}
 
-              {/* Avaliações de produto */}
               {usuario.avaliacao_produto?.map((av) => (
                 <div key={`produto-${av.id}`} className="bg-white rounded-2xl p-5 flex gap-4 shadow-sm">
                   <div className="w-12 h-12 rounded-full bg-[#f0eef9] shrink-0 overflow-hidden flex items-center justify-center">
@@ -336,7 +332,6 @@ export default function PerfilPage() {
                     {av.comentario && (
                       <p className="text-[13px] text-[#555] leading-relaxed">{av.comentario}</p>
                     )}
-                    {/* TODO: substituir href pela rota real da avaliação de produto */}
                     <a href={`#avaliacao-produto-${av.id}`} className="text-[12px] text-[#6A38F3] font-medium mt-1 self-end hover:underline">
                       ver mais
                     </a>
@@ -350,11 +345,19 @@ export default function PerfilPage() {
 
       </div>
 
-      {/* Modal de editar perfil */}
+      {/* Modal editar perfil */}
       {isProprietario && modalAberto && (
         <EditProfileModal
           onClose={() => setModalAberto(false)}
           onSalvar={() => carregarPerfil(username)}
+        />
+      )}
+
+      {/* Modal criar loja */}
+      {isProprietario && modalLojaAberto && (
+        <CriaLoja
+          onClose={() => setModalLojaAberto(false)}
+          onSucesso={() => carregarPerfil(username)}
         />
       )}
     </div>

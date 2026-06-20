@@ -1,45 +1,34 @@
 "use client";
-
 import { useFormik } from "formik";
 import { useState } from "react";
-import ProdutoBase, { ImagensProduto } from "./produto-base";
-import { produtoSchema, dadosVazios } from "../components/schema/produto-schema";
-import { ModalService } from "../services/ModalService";
+import LojaBase, { ImagensLoja, imagensLojasVazias } from "./loja-base";
+import { lojaSchema, dadosVaziosLoja } from "../schema/loja-schema";
+import { ModalService } from "../../services/ModalService";
 
-const imagensVazias: ImagensProduto = {
-  principal: null,
-  secundarias: [null, null, null],
-};
-
-interface CriaProdutoProps {
-  lojaId: number;
+interface CriaLojaProps {
   onClose: () => void;
   onSucesso?: () => void;
 }
 
-export default function CriaProduto({ lojaId, onClose, onSucesso }: CriaProdutoProps) {
-  const [imagens, setImagens] = useState<ImagensProduto>(imagensVazias);
+export default function CriaLoja({ onClose, onSucesso }: CriaLojaProps) {
+  const [imagens, setImagens] = useState<ImagensLoja>(imagensLojasVazias);
 
   const formik = useFormik({
-    initialValues: dadosVazios,
-    validationSchema: produtoSchema,
+    initialValues: dadosVaziosLoja,
+    validationSchema: lojaSchema,
     onSubmit: async (values, { setSubmitting, setStatus }) => {
       try {
-        const produto = await ModalService.criarProduto({
-          loja_id: lojaId,
+        const loja = await ModalService.criarLoja({
           nome: values.nome,
           descricao: values.descricao,
-          preco: parseFloat(values.preco),
-          estoque: parseInt(values.estoque),
-          categoria_id: parseInt(values.subcategoria),
         });
 
-        await ModalService.salvarImagensProduto(produto.id, imagens);
+        await ModalService.salvarImagensLoja(loja.id, imagens);
 
         onSucesso?.();
         onClose();
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Erro ao criar produto.";
+        const msg = err instanceof Error ? err.message : "Erro ao criar loja.";
         setStatus(msg);
       } finally {
         setSubmitting(false);
@@ -48,7 +37,7 @@ export default function CriaProduto({ lojaId, onClose, onSucesso }: CriaProdutoP
   });
 
   return (
-    <ProdutoBase
+    <LojaBase
       formik={formik}
       onClose={onClose}
       imagens={imagens}
@@ -63,8 +52,8 @@ export default function CriaProduto({ lojaId, onClose, onSucesso }: CriaProdutoP
         disabled={formik.isSubmitting}
         className="w-full py-3 rounded-2xl bg-violet-500 text-white font-semibold text-sm hover:bg-violet-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {formik.isSubmitting ? "Criando..." : "Criar produto"}
+        {formik.isSubmitting ? "Criando..." : "Adicionar"}
       </button>
-    </ProdutoBase>
+    </LojaBase>
   );
 }

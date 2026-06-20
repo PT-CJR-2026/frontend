@@ -24,7 +24,14 @@ export class ProdutoService extends ApiService {
   }
 
   async getPorCategoria(categoriaId: number): Promise<Produto[]> {
-  const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
-  return response.data;
-}
+    const response = await axiosInstance.get(`${this.url}/categoria/${categoriaId}`);
+    return response.data;
+  }
+
+  // Busca um único produto pelo id (usado na página de detalhes do produto).
+  // O backend já inclui imagem_produto e loja nessa resposta (rota pública).
+  async getById(id: number): Promise<Produto> {
+    const response = await axiosInstance.get(`${this.url}/${id}`);
+    return response.data;
+  }
 }
